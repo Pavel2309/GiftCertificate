@@ -2,9 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.service.impl.CertificateServiceImpl;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,5 +20,10 @@ public class CertificateController {
     public List<Certificate> getAll() {
         List<Certificate> certificates = certificateService.findAll();
         return certificates;
+    }
+
+    @PostMapping
+    public Certificate addCertificate(@RequestBody Certificate certificate) {
+        return certificateService.create(certificate);
     }
 }

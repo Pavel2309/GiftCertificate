@@ -8,4 +8,6 @@ public interface CertificateService {
 
     List<Certificate> findAll();
 
+    Certificate create(Certificate certificate);
+
 }

@@ -9,6 +9,12 @@ public final class CertificateQueryHolder {
             FROM certificates
             """;
 
+    public static final String SQL_CREATE = """
+            INSERT INTO certificates(title, description, price, duration, create_date, update_date)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """;
+
+
     private CertificateQueryHolder() {
     }
 }
