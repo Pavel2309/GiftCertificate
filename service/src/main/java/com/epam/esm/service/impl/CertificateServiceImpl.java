@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -45,6 +46,13 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
+    public List<Certificate> findWithParameters(Map<String, String> parameters) {
+        if (parameters.isEmpty()) {
+            return findAll();
+        }
+        return certificateRepository.findAllWithParameters(parameters);
+    }
+
     @Override
     public Certificate create(Certificate certificate) {
         certificate.setCreateTime(LocalDateTime.now());
@@ -60,16 +68,12 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public Certificate update(long id, Certificate certificate) throws ServiceException {
-
         Certificate certificateForUpdate = findOne(id).orElseThrow(ServiceException::new);
-
         certificateForUpdate.setUpdateTime(LocalDateTime.now());
-
         Optional.ofNullable(certificate.getTitle()).ifPresent(certificateForUpdate::setTitle);
         Optional.ofNullable(certificate.getDescription()).ifPresent(certificateForUpdate::setDescription);
         Optional.ofNullable(certificate.getPrice()).ifPresent(certificateForUpdate::setPrice);
         Optional.ofNullable(certificate.getDuration()).ifPresent(certificateForUpdate::setDuration);
-
         if (certificate.getTags() != null) {
             certificateRepository.unlinkCertificateWithTags(certificateForUpdate);
             List<Tag> tags = saveTags(certificate.getTags());
@@ -77,7 +81,6 @@ public class CertificateServiceImpl implements CertificateService {
             certificateRepository.linkCertificateWithTags(certificateForUpdate);
         }
         certificateRepository.update(certificateForUpdate);
-
         return certificateForUpdate;
     }
 

@@ -8,6 +8,14 @@ public final class CertificateQueryHolder {
                  certificates.update_date
             FROM certificates
             """;
+    public static final String SQL_FIND_ALL_CERTIFICATES_WITH_TAGS = """
+            SELECT certificates.id, certificates.title, certificates.description,
+                 certificates.price, certificates.duration, certificates.create_date,
+                 certificates.update_date
+            FROM certificates
+            INNER JOIN certificates_has_tags ON certificates.id = certificates_has_tags.certificates_id
+            INNER JOIN tags ON certificates_has_tags.tags_id = tags.id
+            """;
     public static final String SQL_FIND_CERTIFICATE_BY_ID = """
             SELECT certificates.id, certificates.title, certificates.description,
                  certificates.price, certificates.duration, certificates.create_date,

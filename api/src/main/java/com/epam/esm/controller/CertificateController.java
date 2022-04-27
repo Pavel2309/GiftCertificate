@@ -7,6 +7,7 @@ import com.epam.esm.service.impl.CertificateServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/certificates")
@@ -18,15 +19,20 @@ public class CertificateController {
         this.certificateService = certificateService;
     }
 
-    @GetMapping
-    public List<Certificate> getAll() {
-        return certificateService.findAll();
-    }
+//    @GetMapping
+//    public List<Certificate> getAll() {
+//        return certificateService.findAll();
+//    }
 
     @GetMapping("/{id}")
     public Certificate getOne(@PathVariable("id") Long id) {
         return certificateService.findOne(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
+    }
+
+    @GetMapping
+    public List<Certificate> getWithParameters(@RequestParam Map<String, String> parameters) {
+        return certificateService.findWithParameters(parameters);
     }
 
     @PostMapping

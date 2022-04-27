@@ -2,6 +2,7 @@ package com.epam.esm.model.repository.impl;
 
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.mapper.CertificateRowMapper;
+import com.epam.esm.model.query.impl.CertificateQueryBuilder;
 import com.epam.esm.model.repository.CertificateRepository;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -22,15 +24,26 @@ public class CertificateRepositoryImpl implements CertificateRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final CertificateRowMapper certificateRowMapper;
+    private final CertificateQueryBuilder queryBuilder;
 
-    public CertificateRepositoryImpl(JdbcTemplate jdbcTemplate, CertificateRowMapper certificateRowMapper) {
+    public CertificateRepositoryImpl(JdbcTemplate jdbcTemplate,
+                                     CertificateRowMapper certificateRowMapper,
+                                     CertificateQueryBuilder queryBuilder) {
         this.jdbcTemplate = jdbcTemplate;
         this.certificateRowMapper = certificateRowMapper;
+        this.queryBuilder = queryBuilder;
     }
 
     @Override
     public List<Certificate> findAll() {
         return jdbcTemplate.query(SQL_FIND_ALL_CERTIFICATES, certificateRowMapper);
+    }
+
+    @Override
+    public List<Certificate> findAllWithParameters(Map<String, String> parameters) {
+        String query = queryBuilder.buildQuery(SQL_FIND_ALL_CERTIFICATES_WITH_TAGS, parameters);
+        List<String> arguments = queryBuilder.extractQueryArguments(parameters);
+        return jdbcTemplate.query(query, certificateRowMapper, arguments.toArray());
     }
 
     @Override
