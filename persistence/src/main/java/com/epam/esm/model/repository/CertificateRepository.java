@@ -4,4 +4,8 @@ import com.epam.esm.model.entity.Certificate;
 
 public interface CertificateRepository extends CommonRepository<Certificate, Long> {
 
+    boolean linkCertificateWithTags(Certificate certificate);
+
+    boolean unlinkCertificateWithTags(Certificate certificate);
+
 }

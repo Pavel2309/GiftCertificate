@@ -13,6 +13,6 @@ public interface CommonRepository<T, K> {
 
     T update(T t);
 
-    T delete(T t);
+    boolean delete(K id);
 
 }

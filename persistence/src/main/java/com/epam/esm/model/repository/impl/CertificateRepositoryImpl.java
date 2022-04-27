@@ -3,6 +3,7 @@ package com.epam.esm.model.repository.impl;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.mapper.CertificateRowMapper;
 import com.epam.esm.model.repository.CertificateRepository;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -14,8 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.epam.esm.model.repository.CertificateQueryHolder.SQL_CREATE;
-import static com.epam.esm.model.repository.CertificateQueryHolder.SQL_FIND_ALL;
+import static com.epam.esm.model.repository.CertificateQueryHolder.*;
 
 @Repository
 public class CertificateRepositoryImpl implements CertificateRepository {
@@ -30,19 +30,23 @@ public class CertificateRepositoryImpl implements CertificateRepository {
 
     @Override
     public List<Certificate> findAll() {
-        return jdbcTemplate.query(SQL_FIND_ALL, certificateRowMapper);
+        return jdbcTemplate.query(SQL_FIND_ALL_CERTIFICATES, certificateRowMapper);
     }
 
     @Override
     public Optional<Certificate> findOne(Long id) {
-        return Optional.empty();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_FIND_CERTIFICATE_BY_ID, certificateRowMapper, id));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Certificate create(Certificate certificate) {
         KeyHolder key = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
-            PreparedStatement statement = con.prepareStatement(SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement statement = con.prepareStatement(SQL_CREATE_CERTIFICATE, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, certificate.getTitle());
             statement.setString(2, certificate.getDescription());
             statement.setBigDecimal(3, certificate.getPrice());
@@ -57,11 +61,46 @@ public class CertificateRepositoryImpl implements CertificateRepository {
 
     @Override
     public Certificate update(Certificate certificate) {
-        return null;
+        jdbcTemplate.update(SQL_UPDATE_CERTIFICATE,
+                certificate.getTitle(),
+                certificate.getDescription(),
+                certificate.getPrice(),
+                certificate.getDuration(),
+                certificate.getCreateTime(),
+                certificate.getUpdateTime(),
+                certificate.getId());
+        return certificate;
     }
 
     @Override
-    public Certificate delete(Certificate certificate) {
-        return null;
+    public boolean delete(Long id) {
+        return jdbcTemplate.update(SQL_DELETE_CERTIFICATE, id) == 1;
     }
+
+    @Override
+    public boolean linkCertificateWithTags(Certificate certificate) {
+        boolean result = false;
+        if (certificate.getTags() != null) {
+            certificate.getTags().forEach(tag -> {
+                jdbcTemplate.update(con -> {
+                    PreparedStatement statement = con.prepareStatement(SQL_LINK_CERTIFICATE_WITH_TAG, Statement.RETURN_GENERATED_KEYS);
+                    statement.setLong(1, certificate.getId());
+                    statement.setLong(2, tag.getId());
+                    return statement;
+                });
+            });
+            result = true;
+        }
+        return result;
+    }
+
+    @Override
+    public boolean unlinkCertificateWithTags(Certificate certificate) {
+        return jdbcTemplate.update(con -> {
+            PreparedStatement statement = con.prepareStatement(SQL_UNLINK_CERTIFICATE_WITH_TAG);
+            statement.setLong(1, certificate.getId());
+            return statement;
+        }) >= 1;
+    }
+
 }
