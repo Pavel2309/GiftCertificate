@@ -1,19 +1,16 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.repository.CertificateRepository;
 import com.epam.esm.model.repository.TagRepository;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class CertificateServiceImpl implements CertificateService {
@@ -50,7 +47,10 @@ public class CertificateServiceImpl implements CertificateService {
         if (parameters.isEmpty()) {
             return findAll();
         }
-        return certificateRepository.findAllWithParameters(parameters);
+        List<Certificate> certificates = certificateRepository.findAllWithParameters(parameters);
+        certificates.forEach(certificate ->
+                certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
+        return certificates;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class CertificateServiceImpl implements CertificateService {
         certificate.setUpdateTime(LocalDateTime.now());
         Certificate createdCertificate = certificateRepository.create(certificate);
         if (certificate.getTags() != null) {
-            List<Tag> tags = saveTags(certificate.getTags());
+            Set<Tag> tags = saveTags(certificate.getTags());
             createdCertificate.setTags(tags);
             certificateRepository.linkCertificateWithTags(createdCertificate);
         }
@@ -76,7 +76,7 @@ public class CertificateServiceImpl implements CertificateService {
         Optional.ofNullable(certificate.getDuration()).ifPresent(certificateForUpdate::setDuration);
         if (certificate.getTags() != null) {
             certificateRepository.unlinkCertificateWithTags(certificateForUpdate);
-            List<Tag> tags = saveTags(certificate.getTags());
+            Set<Tag> tags = saveTags(certificate.getTags());
             certificateForUpdate.setTags(tags);
             certificateRepository.linkCertificateWithTags(certificateForUpdate);
         }
@@ -89,8 +89,8 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateRepository.delete(id);
     }
 
-    private List<Tag> saveTags(List<Tag> tags) {
-        List<Tag> savedTags = new ArrayList<>();
+    private Set<Tag> saveTags(Set<Tag> tags) {
+        Set<Tag> savedTags = new HashSet<>();
         tags.forEach(tag -> {
             Optional<Tag> currentTag = tagRepository.findByTitle(tag.getTitle());
             if (currentTag.isEmpty()) {

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Component
 public class CertificateRowMapper implements RowMapper<Certificate> {
     @Override
-    public Certificate mapRow(ResultSet rs, int rowNum){
+    public Certificate mapRow(ResultSet rs, int rowNum) {
         try {
             Certificate certificate = new Certificate();
             certificate.setId(rs.getLong(DatabaseColumnName.CERTIFICATE_ID));

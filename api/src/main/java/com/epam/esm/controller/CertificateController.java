@@ -1,11 +1,13 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.exception.ResourceNotFoundException;
-import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.service.impl.CertificateServiceImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -19,11 +21,6 @@ public class CertificateController {
         this.certificateService = certificateService;
     }
 
-//    @GetMapping
-//    public List<Certificate> getAll() {
-//        return certificateService.findAll();
-//    }
-
     @GetMapping("/{id}")
     public Certificate getOne(@PathVariable("id") Long id) {
         return certificateService.findOne(id)
@@ -36,7 +33,8 @@ public class CertificateController {
     }
 
     @PostMapping
-    public Certificate addCertificate(@RequestBody Certificate certificate) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Certificate addCertificate(@RequestBody @Valid Certificate certificate) {
         return certificateService.create(certificate);
     }
 

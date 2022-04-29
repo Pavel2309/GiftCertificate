@@ -3,8 +3,10 @@ package com.epam.esm.controller;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.impl.TagServiceImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -29,7 +31,8 @@ public class TagController {
     }
 
     @PostMapping
-    public Tag addTag(@RequestBody Tag tag) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Tag addTag(@RequestBody @Valid Tag tag) {
         return tagService.create(tag);
     }
 

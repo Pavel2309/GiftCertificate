@@ -1,7 +1,6 @@
 package com.epam.esm.model.repository.impl;
 
 import com.epam.esm.config.DataIntegrationConfig;
-import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Tag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {DataIntegrationConfig.class})

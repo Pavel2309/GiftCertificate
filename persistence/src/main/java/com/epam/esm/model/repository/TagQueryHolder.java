@@ -25,11 +25,6 @@ public final class TagQueryHolder {
     public static final String SQL_CREATE_TAG = """
             INSERT INTO tags (title) VALUES ( ? )
             """;
-    public static final String SQL_UPDATE_TAG = """
-            UPDATE tags
-            SET tags.title = ?
-            WHERE tags.id = ?
-            """;
     public static final String SQL_DELETE_TAG = """
             DELETE FROM tags WHERE tags.id = ?
             """;

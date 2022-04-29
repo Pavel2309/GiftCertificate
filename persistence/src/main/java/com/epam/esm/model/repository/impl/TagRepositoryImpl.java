@@ -11,9 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static com.epam.esm.model.repository.TagQueryHolder.*;
 
@@ -56,8 +54,7 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Tag update(Tag tag) {
-        jdbcTemplate.update(SQL_UPDATE_TAG, tag.getTitle(), tag.getId());
-        return tag;
+        throw new UnsupportedOperationException("update tag operation is not supported");
     }
 
     @Override
@@ -75,7 +72,7 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
-    public List<Tag> findByCertificateId(Long id) {
-        return jdbcTemplate.query(SQL_FIND_TAG_BY_CERTIFICATE_ID, tagRowMapper, id);
+    public Set<Tag> findByCertificateId(Long id) {
+        return new HashSet<>(jdbcTemplate.query(SQL_FIND_TAG_BY_CERTIFICATE_ID, tagRowMapper, id));
     }
 }

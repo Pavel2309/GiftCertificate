@@ -31,7 +31,11 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag create(Tag tag) {
-        return tagRepository.create(tag);
+        Optional<Tag> currentTag = tagRepository.findByTitle(tag.getTitle());
+        if (currentTag.isEmpty()) {
+            return tagRepository.create(tag);
+        }
+        return currentTag.get();
     }
 
     @Override
