@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-class TagControllerTest {
+class TagControllerUnitTest {
 
     @Mock
     private TagServiceImpl tagService;

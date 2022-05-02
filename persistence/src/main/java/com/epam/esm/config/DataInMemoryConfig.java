@@ -12,9 +12,13 @@ import javax.sql.DataSource;
 @Configuration
 @ComponentScan("com.epam.esm")
 @Profile("development")
-public class DataIntegrationConfig {
+public class DataInMemoryConfig {
     @Bean
     public DataSource inMemoryDataSource() {
-        return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).addScript("config/script.sql").build();
+        return new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("sql/schema.sql")
+                .addScript("sql/data.sql")
+                .build();
     }
 }

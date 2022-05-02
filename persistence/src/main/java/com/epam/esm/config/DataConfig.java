@@ -14,7 +14,6 @@ import javax.sql.DataSource;
 @PropertySource("classpath:config/db.properties")
 @Profile("production")
 public class DataConfig {
-
     @Bean
     public DataSource dataSource(@Value("${driverClassName}") String driver,
                                  @Value("${jdbcUrl}") String jdbcUrl,

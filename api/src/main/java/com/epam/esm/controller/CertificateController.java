@@ -44,7 +44,8 @@ public class CertificateController {
      */
     @GetMapping
     public List<Certificate> getWithParameters(@RequestParam Map<String, String> parameters) {
-        return certificateService.findWithParameters(parameters);
+        List<Certificate> certificates = certificateService.findWithParameters(parameters);
+        return certificates;
     }
 
     /**
