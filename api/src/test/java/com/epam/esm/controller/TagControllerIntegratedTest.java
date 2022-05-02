@@ -1,6 +1,8 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.config.DataInMemoryConfig;
+import com.epam.esm.model.entity.Tag;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -34,8 +36,20 @@ public class TagControllerIntegratedTest {
 
     private MockMvc mockMvc;
 
+    private Tag newTag;
+
+    private static String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @BeforeAll
     void setUp() {
+        newTag = new Tag();
+        newTag.setTitle("NewTag");
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 
@@ -57,16 +71,12 @@ public class TagControllerIntegratedTest {
 
     @Test
     void addTag() throws Exception {
-        String newTagJson = """
-            {
-                "title": "Test"
-            }""";
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/tags/")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(newTagJson))
+                        .content(asJsonString(newTag)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(IsNull.notNullValue()))
-                .andExpect(jsonPath("$.title").value("Test"));
+                .andExpect(jsonPath("$.title").value(newTag.getTitle()));
     }
 
     @ParameterizedTest
