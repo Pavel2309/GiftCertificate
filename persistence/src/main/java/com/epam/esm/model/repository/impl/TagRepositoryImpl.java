@@ -73,6 +73,6 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Set<Tag> findByCertificateId(Long id) {
-        return new HashSet<>(jdbcTemplate.query(SQL_FIND_TAG_BY_CERTIFICATE_ID, tagRowMapper, id));
+        return new HashSet<>(jdbcTemplate.query(SQL_FIND_TAGS_BY_CERTIFICATE_ID, tagRowMapper, id));
     }
 }

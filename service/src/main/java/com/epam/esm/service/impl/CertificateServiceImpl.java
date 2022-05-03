@@ -43,6 +43,7 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
+    @Override
     public List<Certificate> findWithParameters(Map<String, String> parameters) {
         if (parameters.isEmpty()) {
             return findAll();
@@ -75,7 +76,7 @@ public class CertificateServiceImpl implements CertificateService {
         Optional.ofNullable(certificate.getPrice()).ifPresent(certificateForUpdate::setPrice);
         Optional.ofNullable(certificate.getDuration()).ifPresent(certificateForUpdate::setDuration);
         if (certificate.getTags() != null) {
-            certificateRepository.unlinkCertificateWithTags(certificateForUpdate);
+            certificateRepository.unlinkCertificateWithTags(certificateForUpdate.getId());
             Set<Tag> tags = saveTags(certificate.getTags());
             certificateForUpdate.setTags(tags);
             certificateRepository.linkCertificateWithTags(certificateForUpdate);
@@ -86,6 +87,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public boolean delete(Long id) {
+        certificateRepository.unlinkCertificateWithTags(id);
         return certificateRepository.delete(id);
     }
 
