@@ -54,6 +54,7 @@ class TagControllerUnitTest {
     void setUp() {
         tag = new Tag();
         tag.setId(1L);
+        tag.setTitle("Title");
         tagList = new ArrayList<>();
         tagList.add(tag);
         mockMvc = MockMvcBuilders.standaloneSetup(tagController).build();

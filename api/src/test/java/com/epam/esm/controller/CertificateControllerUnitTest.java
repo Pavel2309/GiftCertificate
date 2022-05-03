@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +55,11 @@ class CertificateControllerUnitTest {
     void setUp() {
         certificate = new Certificate();
         certificate.setId(1L);
+        certificate.setTitle("Title");
+        certificate.setDescription("Description");
+        certificate.setPrice(BigDecimal.TEN);
+        certificate.setDuration(11);
+
         certificateList = new ArrayList<>();
         certificateList.add(certificate);
         mockMvc = MockMvcBuilders.standaloneSetup(certificateController).build();

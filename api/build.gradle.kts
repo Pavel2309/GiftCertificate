@@ -1,4 +1,3 @@
-
 plugins {
     war
     id("GiftCertificate.java-common-conventions")
@@ -15,6 +14,7 @@ dependencies {
     testImplementation("org.mockito:mockito-junit-jupiter:4.5.1")
 
 }
+
 repositories {
     mavenCentral()
 }
