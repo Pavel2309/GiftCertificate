@@ -3,14 +3,14 @@ package com.epam.esm.model.repository;
 public class OrderQueryHolder {
 
     public static final String SQL_FIND_ALL_ORDERS = """
-            SELECT orders.id, orders.price, orders.purchase_date, u.id, u.name
+            SELECT orders.id, orders.price, orders.purchase_date, users.id, users.name
             FROM orders
-            INNER JOIN users u on orders.users_id = u.id
+            INNER JOIN users on orders.users_id = users.id
             """;
     public static final String SQL_FIND_ORDER_BY_ID = """
-            SELECT orders.id, orders.price, orders.purchase_date, u.id, u.name
+            SELECT orders.id, orders.price, orders.purchase_date, users.id, users.name
             FROM orders
-            INNER JOIN users u on orders.users_id = u.id
+            INNER JOIN users on orders.users_id = users.id
             WHERE orders.id = ?
             """;
     public static final String SQL_FIND_ALL_ORDERS_BY_USER_ID = """
