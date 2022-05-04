@@ -1,5 +1,6 @@
 package com.epam.esm.service;
 
+import com.epam.esm.model.dto.OrderDto;
 import com.epam.esm.model.entity.Order;
 
 import java.util.List;
@@ -12,25 +13,25 @@ public interface OrderService {
     /**
      * Finds all orders.
      *
-     * @return a list of order objects
+     * @return a list of order data transfer objects
      */
-    List<Order> findAll();
+    List<OrderDto> findAll();
 
     /**
      * Finds all orders with the specified user id.
      *
      * @param id a user's id
-     * @return a list of order objects
+     * @return a list of order data transfer objects
      */
-    List<Order> findByUserId(Long id);
+    List<OrderDto> findByUserId(Long id);
 
     /**
      * Finds one order with the specified id.
      *
      * @param id an order's id
-     * @return an optional object of an order
+     * @return an optional of an order data transfer object
      */
-    Optional<Order> findOne(Long id);
+    Optional<OrderDto> findOne(Long id);
 
     /**
      * Creates a new order.

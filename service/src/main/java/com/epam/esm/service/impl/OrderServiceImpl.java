@@ -1,5 +1,7 @@
 package com.epam.esm.service.impl;
 
+import com.epam.esm.converter.impl.OrderConverter;
+import com.epam.esm.model.dto.OrderDto;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.repository.CertificateRepository;
@@ -9,6 +11,7 @@ import com.epam.esm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,38 +21,39 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final CertificateRepository certificateRepository;
     private final TagRepository tagRepository;
+    private final OrderConverter orderConverter;
 
     @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository, CertificateRepository certificateRepository, TagRepository tagRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository,
+                            CertificateRepository certificateRepository,
+                            TagRepository tagRepository,
+                            OrderConverter orderConverter) {
         this.orderRepository = orderRepository;
         this.certificateRepository = certificateRepository;
         this.tagRepository = tagRepository;
+        this.orderConverter = orderConverter;
     }
 
     @Override
-    public List<Order> findAll() {
+    public List<OrderDto> findAll() {
         List<Order> orders = orderRepository.findAll();
-        return populateCertificatesAndTags(orders);
+        List<OrderDto> orderDtos = new ArrayList<>(orders.size());
+        populateCertificatesAndTags(orders).forEach(order -> orderDtos.add(orderConverter.convertEntityToDto(order)));
+        return orderDtos;
     }
 
     @Override
-    public List<Order> findByUserId(Long id) {
+    public List<OrderDto> findByUserId(Long id) {
         List<Order> orders = orderRepository.findOrdersByUserId(id);
-        return populateCertificatesAndTags(orders);
+        List<OrderDto> orderDtos = new ArrayList<>(orders.size());
+        populateCertificatesAndTags(orders).forEach(order -> orderDtos.add(orderConverter.convertEntityToDto(order)));
+        return orderDtos;
     }
 
     @Override
-    public Optional<Order> findOne(Long id) {
-        Optional<Order> order = orderRepository.findOne(id);
-        if (order.isPresent()) {
-            List<Certificate> certificates = certificateRepository.findByOrderId(order.get().getId());
-            certificates.forEach(certificate ->
-                    certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
-            order.get().setCertificates(certificates);
-            return order;
-        } else {
-            return Optional.empty();
-        }
+    public Optional<OrderDto> findOne(Long id) {
+        Optional<Order> order = findOneOrder(id);
+        return order.map(orderConverter::convertEntityToDto);
     }
 
     @Override
@@ -73,5 +77,18 @@ public class OrderServiceImpl implements OrderService {
             order.setCertificates(certificates);
         });
         return orders;
+    }
+
+    private Optional<Order> findOneOrder(Long id) {
+        Optional<Order> order = orderRepository.findOne(id);
+        if (order.isPresent()) {
+            List<Certificate> certificates = certificateRepository.findByOrderId(order.get().getId());
+            certificates.forEach(certificate ->
+                    certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
+            order.get().setCertificates(certificates);
+            return order;
+        } else {
+            return Optional.empty();
+        }
     }
 }
