@@ -1,12 +1,8 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.exception.ResourceNotFoundException;
-import com.epam.esm.exception.ServiceException;
-import com.epam.esm.model.dto.OrderDto;
 import com.epam.esm.model.entity.User;
-import com.epam.esm.service.OrderService;
 import com.epam.esm.service.impl.UserServiceImpl;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,11 +15,9 @@ import java.util.List;
 public class UserController {
 
     private final UserServiceImpl userService;
-    private final OrderService orderService;
 
-    public UserController(UserServiceImpl userService, OrderService orderService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
-        this.orderService = orderService;
     }
 
     /**
