@@ -61,7 +61,7 @@ public class CertificateController {
     }
 
     /**
-     * Updates an existing certificate
+     * Updates an existing certificate.
      *
      * @param id the certificate's id for update
      * @param certificate a certificate object in the JSON format containing fields to update

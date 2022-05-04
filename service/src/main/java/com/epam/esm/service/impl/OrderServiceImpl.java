@@ -1,6 +1,7 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.converter.impl.OrderConverter;
+import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.OrderDto;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Order;
@@ -57,10 +58,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order create(Order order) {
+    public OrderDto create(OrderDto orderDto) throws ServiceException {
+        orderDto.setUserId(orderDto.getUserId());
+        Order order = orderConverter.convertDtoToEntity(orderDto);
         Order createdOrder = orderRepository.create(order);
         orderRepository.linkOrderWithCertificates(createdOrder);
-        return createdOrder;
+        orderDto.setId(createdOrder.getId());
+        orderDto.setPrice(createdOrder.getPrice());
+        orderDto.setPurchaseDate(createdOrder.getPurchaseDate());
+        return orderDto;
     }
 
     @Override

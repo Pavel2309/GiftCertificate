@@ -14,10 +14,10 @@ public class OrderQueryHolder {
             WHERE orders.id = ?
             """;
     public static final String SQL_FIND_ALL_ORDERS_BY_USER_ID = """
-            SELECT orders.id, orders.price, orders.purchase_date, u.id, u.name
+            SELECT orders.id, orders.price, orders.purchase_date, users.id, users.name
             FROM orders
-            INNER JOIN users u on orders.users_id = u.id
-            WHERE u.id = ?
+            INNER JOIN users on orders.users_id = users.id
+            WHERE users.id = ?
             """;
     public static final String SQL_CREATE_ORDER = """
             INSERT INTO orders(orders.users_id, orders.price, orders.purchase_date)

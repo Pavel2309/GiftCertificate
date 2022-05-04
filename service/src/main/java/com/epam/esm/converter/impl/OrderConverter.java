@@ -11,6 +11,8 @@ import com.epam.esm.model.repository.UserRepository;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +49,7 @@ public class OrderConverter implements ObjectConverter<Order, OrderDto> {
                 new ServiceException("can't find a user with id: " + orderDto.getUserId())
         );
         order.setUser(user);
-        order.setPurchaseDate(orderDto.getPurchaseDate());
+        order.setPurchaseDate(Timestamp.valueOf(LocalDateTime.now()));
         List<Certificate> certificates = new ArrayList<>(orderDto.getCertificatesId().size());
         List<Long> certificatesId = orderDto.getCertificatesId();
         BigDecimal overallPrice = BigDecimal.ZERO;

@@ -1,5 +1,6 @@
 package com.epam.esm.service;
 
+import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.OrderDto;
 import com.epam.esm.model.entity.Order;
 
@@ -36,10 +37,10 @@ public interface OrderService {
     /**
      * Creates a new order.
      *
-     * @param order an order object
+     * @param orderDto an order data transfer object
      * @return a created order
      */
-    Order create(Order order);
+    OrderDto create(OrderDto orderDto) throws ServiceException;
 
     /**
      * Deletes an order with the specified id.

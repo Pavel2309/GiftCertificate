@@ -45,6 +45,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public List<Order> findOrdersByUserId(Long id) {
+        return jdbcTemplate.query(SQL_FIND_ALL_ORDERS_BY_USER_ID, orderRowMapper, id);
+    }
+
+    @Override
     public Order create(Order order) {
         KeyHolder key = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
@@ -66,11 +71,6 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public boolean delete(Long id) {
         return jdbcTemplate.update(SQL_DELETE_ORDER_BY_ID, id) == 1;
-    }
-
-    @Override
-    public List<Order> findOrdersByUserId(Long id) {
-        return jdbcTemplate.query(SQL_FIND_ALL_ORDERS_BY_USER_ID, orderRowMapper, id);
     }
 
     @Override

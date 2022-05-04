@@ -1,8 +1,10 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.OrderDto;
 import com.epam.esm.model.entity.User;
+import com.epam.esm.service.OrderService;
 import com.epam.esm.service.impl.UserServiceImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +19,11 @@ import java.util.List;
 public class UserController {
 
     private final UserServiceImpl userService;
+    private final OrderService orderService;
 
-    public UserController(UserServiceImpl userService) {
+    public UserController(UserServiceImpl userService, OrderService orderService) {
         this.userService = userService;
+        this.orderService = orderService;
     }
 
     /**
@@ -42,11 +46,5 @@ public class UserController {
     public User getOne(@PathVariable("id") Long id) {
         return userService.findOne(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
-    }
-
-    @PostMapping("/{id}/orders")
-    @ResponseStatus(HttpStatus.CREATED)
-    public OrderDto createOrder(@PathVariable("id") Long id, @RequestBody OrderDto orderDto) {
-        return null;
     }
 }
