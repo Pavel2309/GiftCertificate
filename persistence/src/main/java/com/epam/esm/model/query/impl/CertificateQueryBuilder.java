@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -23,6 +22,8 @@ public class CertificateQueryBuilder implements QueryBuilder {
     public static final String SQL_CERTIFICATE_UPDATE_DATE = " certificates.update_date ";
     public static final String SQL_GROUP_BY = " GROUP BY certificates.id, certificates.title, certificates.description, certificates.price, certificates.duration, certificates.create_date, certificates.update_date ";
     public static final String SQL_HAVING_COUNT_DISTINCT_TAGS = " HAVING COUNT(DISTINCT tags.id) = ";
+    public static final String SQL_LIMIT = " LIMIT ";
+    public static final String SQL_OFFSET = " OFFSET ";
 
     public static final String EMPTY_STRING = "";
     public static final String COMMA = ",";
@@ -32,15 +33,22 @@ public class CertificateQueryBuilder implements QueryBuilder {
     public static final String TAG_TITLE = "tag_title";
     public static final String SEARCH_QUERY = "search_query";
     public static final String SORT = "sort";
+    public static final String PAGE = "page";
 
+    public static final String SORT_BY_UPDATE_DATE_ASC = "update_date(asc)";
+    public static final String SORT_BY_UPDATE_DATE_DESC = "update_date(desc)";
+    public static final String SORT_BY_TITLE_ASC = "title(asc)";
+    public static final String SORT_BY_TITLE_DESC = "title(desc)";
+
+    public static final int ENTITIES_PER_PAGE = 10;
+    public static final int DEFAULT_PAGE_NUMBER = 1;
 
     @Override
     public String buildQuery(String sql, Map<String, String> parameters) {
         StringBuilder query = new StringBuilder(sql);
-        if (!parameters.isEmpty()) {
-            query.append(buildQueryFromSearchParameters(parameters));
-            query.append(buildQueryFromSortParameters(parameters));
-        }
+        query.append(buildQueryFromSearchParameters(parameters));
+        query.append(buildQueryFromSortParameters(parameters));
+        query.append(buildQueryFromPageParameters(parameters));
         return query.toString();
     }
 
@@ -61,9 +69,22 @@ public class CertificateQueryBuilder implements QueryBuilder {
         return arguments;
     }
 
+    private String buildQueryFromPageParameters(Map<String, String> parameters) {
+        StringBuilder query = new StringBuilder(SQL_LIMIT);
+        int pageNumber = DEFAULT_PAGE_NUMBER;
+        if (parameters.containsKey(PAGE)) {
+            pageNumber = parsePageParameter(parameters.get(PAGE));
+        }
+        query.append(ENTITIES_PER_PAGE);
+        if (pageNumber * ENTITIES_PER_PAGE > ENTITIES_PER_PAGE) {
+            query.append(SQL_OFFSET);
+            query.append(pageNumber * ENTITIES_PER_PAGE - ENTITIES_PER_PAGE);
+        }
+        return query.toString();
+    }
+
     private String buildQueryFromSearchParameters(Map<String, String> parameters) {
-        if (!parameters.containsKey(TAG_TITLE) &&
-                !parameters.containsKey(SEARCH_QUERY)) {
+        if (!parameters.containsKey(TAG_TITLE) && !parameters.containsKey(SEARCH_QUERY)) {
             return SQL_GROUP_BY;
         }
         StringBuilder query = new StringBuilder(SQL_WHERE);
@@ -108,30 +129,38 @@ public class CertificateQueryBuilder implements QueryBuilder {
         StringBuilder query = new StringBuilder(SQL_ORDER_BY);
         String sortParameters = parameters.get(SORT);
         boolean isNotEmpty = false;
-        if (sortParameters.contains("update_date(asc)")) {
+        if (sortParameters.contains(SORT_BY_UPDATE_DATE_ASC)) {
             query.append(SQL_CERTIFICATE_UPDATE_DATE + SQL_ASC);
             isNotEmpty = true;
         }
-        if (sortParameters.contains("update_date(desc)")) {
+        if (sortParameters.contains(SORT_BY_UPDATE_DATE_DESC)) {
             if (isNotEmpty) {
                 query.append(COMMA);
             }
             query.append(SQL_CERTIFICATE_UPDATE_DATE + SQL_DESC);
             isNotEmpty = true;
         }
-        if (sortParameters.contains("title(asc)")) {
+        if (sortParameters.contains(SORT_BY_TITLE_ASC)) {
             if (isNotEmpty) {
                 query.append(COMMA);
             }
             query.append(SQL_CERTIFICATE_TITLE + SQL_ASC);
             isNotEmpty = true;
         }
-        if (sortParameters.contains("title(desc")) {
+        if (sortParameters.contains(SORT_BY_TITLE_DESC)) {
             if (isNotEmpty) {
                 query.append(COMMA);
             }
             query.append(SQL_CERTIFICATE_TITLE + SQL_DESC);
         }
         return query.toString();
+    }
+
+    private int parsePageParameter(String input) {
+        try {
+            return Integer.parseInt(input);
+        } catch (NumberFormatException e) {
+            return DEFAULT_PAGE_NUMBER;
+        }
     }
 }

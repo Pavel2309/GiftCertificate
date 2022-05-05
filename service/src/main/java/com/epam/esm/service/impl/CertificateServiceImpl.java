@@ -45,9 +45,9 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public List<Certificate> findWithParameters(Map<String, String> parameters) {
-        if (parameters.isEmpty()) {
-            return findAll();
-        }
+//        if (parameters.isEmpty()) {
+//            return findAll();
+//        }
         List<Certificate> certificates = certificateRepository.findAllWithParameters(parameters);
         certificates.forEach(certificate ->
                 certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
