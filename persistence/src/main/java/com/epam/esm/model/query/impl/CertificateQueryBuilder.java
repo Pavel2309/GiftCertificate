@@ -4,6 +4,8 @@ import com.epam.esm.model.query.QueryBuilder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -15,14 +17,18 @@ public class CertificateQueryBuilder implements QueryBuilder {
     public static final String SQL_ASC = " ASC ";
     public static final String SQL_DESC = " DESC ";
     public static final String SQL_TAG_TITLE_EQUALS_PARAMETER = " tags.title = ? ";
-    public static final String SQL_TITLE_OR_DESCRIPTION_LIKE =
-            " certificates.title LIKE CONCAT('%', ? ,'%') OR certificates.description LIKE CONCAT('%', ? ,'%') ";
+    public static final String SQL_TAG_TITLE_IN_PARAMETER = " tags.title IN ";
+    public static final String SQL_TITLE_OR_DESCRIPTION_LIKE = " certificates.title LIKE CONCAT('%', ? ,'%') OR certificates.description LIKE CONCAT('%', ? ,'%') ";
     public static final String SQL_CERTIFICATE_TITLE = " certificates.title ";
     public static final String SQL_CERTIFICATE_UPDATE_DATE = " certificates.update_date ";
     public static final String SQL_GROUP_BY = " GROUP BY certificates.id, certificates.title, certificates.description, certificates.price, certificates.duration, certificates.create_date, certificates.update_date ";
+    public static final String SQL_HAVING_COUNT_DISTINCT_TAGS = " HAVING COUNT(DISTINCT tags.id) = ";
 
     public static final String EMPTY_STRING = "";
-    public static final String COMMA = " , ";
+    public static final String COMMA = ",";
+    public static final String OPEN_BRACKET = "(";
+    public static final String CLOSE_BRACKET = ")";
+    public static final String QUESTION_MARK = "?";
     public static final String TAG_TITLE = "tag_title";
     public static final String SEARCH_QUERY = "search_query";
     public static final String SORT = "sort";
@@ -41,7 +47,12 @@ public class CertificateQueryBuilder implements QueryBuilder {
     public ArrayList<String> extractQueryArguments(Map<String, String> parameters) {
         ArrayList<String> arguments = new ArrayList<>();
         if (parameters.containsKey(TAG_TITLE)) {
-            arguments.add(parameters.get(TAG_TITLE));
+            String[] tags = parameters.get(TAG_TITLE).split(COMMA);
+            if (tags.length > 1) {
+                arguments.addAll(Arrays.asList(tags));
+            } else {
+                arguments.add(parameters.get(TAG_TITLE));
+            }
         }
         if (parameters.containsKey(SEARCH_QUERY)) {
             arguments.add(parameters.get(SEARCH_QUERY));
@@ -53,12 +64,27 @@ public class CertificateQueryBuilder implements QueryBuilder {
     private String buildQueryFromSearchParameters(Map<String, String> parameters) {
         if (!parameters.containsKey(TAG_TITLE) &&
                 !parameters.containsKey(SEARCH_QUERY)) {
-            return EMPTY_STRING;
+            return SQL_GROUP_BY;
         }
         StringBuilder query = new StringBuilder(SQL_WHERE);
         boolean isNotEmpty = false;
+        int numberOfTags = 0;
         if (parameters.containsKey(TAG_TITLE)) {
-            query.append(SQL_TAG_TITLE_EQUALS_PARAMETER);
+            String[] tags = parameters.get(TAG_TITLE).split(COMMA);
+            if (tags.length > 1) {
+                query.append(SQL_TAG_TITLE_IN_PARAMETER);
+                query.append(OPEN_BRACKET);
+                for (int i = 0; i < tags.length; i++) {
+                    query.append(QUESTION_MARK);
+                    if (i != tags.length - 1) {
+                        query.append(COMMA);
+                    }
+                }
+                numberOfTags = tags.length;
+                query.append(CLOSE_BRACKET);
+            } else {
+                query.append(SQL_TAG_TITLE_EQUALS_PARAMETER);
+            }
             isNotEmpty = true;
         }
         if (parameters.containsKey(SEARCH_QUERY)) {
@@ -69,6 +95,9 @@ public class CertificateQueryBuilder implements QueryBuilder {
             isNotEmpty = true;
         }
         query.append(SQL_GROUP_BY);
+        if (numberOfTags > 1) {
+            query.append(SQL_HAVING_COUNT_DISTINCT_TAGS).append(numberOfTags);
+        }
         return query.toString();
     }
 
