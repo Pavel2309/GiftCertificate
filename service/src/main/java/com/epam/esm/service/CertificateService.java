@@ -4,6 +4,7 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.entity.Certificate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -16,6 +17,14 @@ public interface CertificateService {
      * @return a list of certificate objects
      */
     List<Certificate> findAll();
+
+    /**
+     * Finds all certificates with specified parameters such as search query, tags and sort.
+     *
+     * @param parameters a map of request parameters
+     * @return a list of certificate objects
+     */
+    List<Certificate> findWithParameters(Map<String, String> parameters);
 
     /**
      * Finds one certificate with the specified id.

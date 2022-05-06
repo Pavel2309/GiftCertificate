@@ -47,6 +47,13 @@ public final class CertificateQueryHolder {
             WHERE certificates_id = ?
             """;
 
+    public static final String SQL_FIND_CERTIFICATES_BY_ORDER_ID = """
+            SELECT certificates.id, certificates.title, certificates.description, certificates.price, certificates.duration, certificates.create_date, certificates.update_date
+            FROM certificates
+            INNER JOIN orders_has_certificates ohc on certificates.id = ohc.certificates_id
+            WHERE ohc.orders_id = ?
+            """;
+
     private CertificateQueryHolder() {
     }
 }

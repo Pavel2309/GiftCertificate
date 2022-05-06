@@ -3,7 +3,9 @@ plugins {
 }
 
 dependencies {
-    implementation("org.springframework:spring-jdbc:5.3.17")
+
+    implementation("org.springframework.boot:spring-boot-starter-jdbc:2.6.7")
+
     implementation("mysql:mysql-connector-java:8.0.28")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("com.h2database:h2:2.1.210")

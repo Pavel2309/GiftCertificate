@@ -47,6 +47,11 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     }
 
     @Override
+    public List<Certificate> findByOrderId(Long id) {
+        return jdbcTemplate.query(SQL_FIND_CERTIFICATES_BY_ORDER_ID, certificateRowMapper, id);
+    }
+
+    @Override
     public Optional<Certificate> findOne(Long id) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_FIND_CERTIFICATE_BY_ID, certificateRowMapper, id));
@@ -108,12 +113,11 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     }
 
     @Override
-    public boolean unlinkCertificateWithTags(Certificate certificate) {
+    public boolean unlinkCertificateWithTags(Long id) {
         return jdbcTemplate.update(con -> {
             PreparedStatement statement = con.prepareStatement(SQL_UNLINK_CERTIFICATE_WITH_TAG);
-            statement.setLong(1, certificate.getId());
+            statement.setLong(1, id);
             return statement;
         }) >= 1;
     }
-
 }

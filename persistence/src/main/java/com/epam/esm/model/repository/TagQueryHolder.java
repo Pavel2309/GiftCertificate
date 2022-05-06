@@ -16,7 +16,7 @@ public final class TagQueryHolder {
             FROM tags
             WHERE tags.title = ?
             """;
-    public static final String SQL_FIND_TAG_BY_CERTIFICATE_ID = """
+    public static final String SQL_FIND_TAGS_BY_CERTIFICATE_ID = """
             SELECT tags.id, tags.title
             FROM tags
             INNER JOIN certificates_has_tags ON certificates_has_tags.tags_id = tags.id
@@ -30,6 +30,5 @@ public final class TagQueryHolder {
             """;
 
     private TagQueryHolder() {
-
     }
 }

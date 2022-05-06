@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: production
+  datasource:
+    url: jdbc:mysql://localhost:3306/certificatedb?allowPublicKeyRetrieval=true&useSSL=false
+    username: admin
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 4
+      pool-name: pool

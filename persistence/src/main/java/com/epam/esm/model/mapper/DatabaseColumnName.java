@@ -16,6 +16,15 @@ public class DatabaseColumnName {
     public static final String TAG_ID = "tags.id";
     public static final String TAG_TITLE = "tags.title";
 
+    public static final String USER_ID = "users.id";
+    public static final String USER_NAME = "users.name";
+
+    public static final String ORDER_ID = "orders.id";
+    public static final String ORDER_USER_ID = "orders.users_id";
+    public static final String ORDER_CERTIFICATE_ID = "orders.certificates_id";
+    public static final String ORDER_PRICE = "orders.price";
+    public static final String ORDER_PURCHASE_DATE = "orders.purchase_date";
+
     private DatabaseColumnName() {
     }
 }

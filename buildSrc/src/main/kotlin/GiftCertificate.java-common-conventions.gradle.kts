@@ -17,21 +17,19 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 
-    implementation("org.springframework:spring-context:5.3.17")
-    implementation("org.springframework:spring-webmvc:5.3.17")
+    implementation("org.springframework.boot:spring-boot-starter-web:2.6.7")
+    testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.7")
 
     testImplementation("junit:junit-dep:4.11")
-    testImplementation("org.springframework:spring-test:5.3.17")
     testImplementation("org.mockito:mockito-core:4.4.0")
     testImplementation("org.hamcrest:hamcrest-library:2.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
-    testImplementation("com.h2database:h2:2.1.210")
+
 
     implementation ("javax.validation:validation-api:2.0.1.Final")
     implementation ("org.hibernate:hibernate-validator:6.0.2.Final")
-
 }
 
 tasks.test {
