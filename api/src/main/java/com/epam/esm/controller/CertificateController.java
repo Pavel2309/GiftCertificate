@@ -1,15 +1,22 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.assembler.CertificateModelAssembler;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.service.impl.CertificateServiceImpl;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * The REST API Certificate controller.
@@ -19,9 +26,11 @@ import java.util.Map;
 public class CertificateController {
 
     private final CertificateServiceImpl certificateService;
+    private final CertificateModelAssembler assembler;
 
-    public CertificateController(CertificateServiceImpl certificateService) {
+    public CertificateController(CertificateServiceImpl certificateService, CertificateModelAssembler assembler) {
         this.certificateService = certificateService;
+        this.assembler = assembler;
     }
 
     /**
@@ -31,9 +40,10 @@ public class CertificateController {
      * @return a certificate object
      */
     @GetMapping("/{id}")
-    public Certificate getOne(@PathVariable("id") Long id) {
-        return certificateService.findOne(id)
+    public EntityModel<Certificate> getOne(@PathVariable("id") Long id) {
+        Certificate certificate = certificateService.findOne(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
+        return assembler.toModel(certificate);
     }
 
     /**
@@ -43,9 +53,11 @@ public class CertificateController {
      * @return a list of certificates
      */
     @GetMapping
-    public List<Certificate> getWithParameters(@RequestParam Map<String, String> parameters) {
-        List<Certificate> certificates = certificateService.findWithParameters(parameters);
-        return certificates;
+    public CollectionModel<EntityModel<Certificate>> getWithParameters(@RequestParam Map<String, String> parameters) {
+        List<EntityModel<Certificate>> certificates = certificateService.findWithParameters(parameters).stream()
+                .map(assembler::toModel)
+                .toList();
+        return CollectionModel.of(certificates, linkTo(methodOn(CertificateController.class).getWithParameters(parameters)).withSelfRel());
     }
 
     /**

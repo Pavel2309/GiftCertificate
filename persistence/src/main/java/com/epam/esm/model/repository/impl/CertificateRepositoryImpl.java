@@ -92,7 +92,6 @@ public class CertificateRepositoryImpl implements CertificateRepository {
 
     @Override
     public boolean delete(Long id) {
-
         return jdbcTemplate.update(SQL_DELETE_CERTIFICATE, id) == 1;
     }
 
@@ -121,5 +120,4 @@ public class CertificateRepositoryImpl implements CertificateRepository {
             return statement;
         }) >= 1;
     }
-
 }

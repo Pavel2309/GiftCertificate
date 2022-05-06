@@ -1,13 +1,19 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.assembler.OrderModelAssembler;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.OrderDto;
 import com.epam.esm.service.impl.OrderServiceImpl;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * The REST API Order controller.
@@ -17,9 +23,11 @@ import java.util.List;
 public class OrderController {
 
     private final OrderServiceImpl orderService;
+    private final OrderModelAssembler assembler;
 
-    public OrderController(OrderServiceImpl orderService) {
+    public OrderController(OrderServiceImpl orderService, OrderModelAssembler assembler) {
         this.orderService = orderService;
+        this.assembler = assembler;
     }
 
     /**
@@ -28,8 +36,10 @@ public class OrderController {
      * @return a list of order data transfer objects
      */
     @GetMapping
-    public List<OrderDto> getAll() {
-        return orderService.findAll();
+    public CollectionModel<EntityModel<OrderDto>> getAll() {
+        List<EntityModel<OrderDto>> orders = orderService.findAll().stream()
+                .map(assembler::toModel).toList();
+        return CollectionModel.of(orders, linkTo(methodOn(OrderController.class)).withSelfRel());
     }
 
     /**
@@ -39,9 +49,23 @@ public class OrderController {
      * @return an order object
      */
     @GetMapping("/{id}")
-    public OrderDto getOne(@PathVariable("id") Long id) {
-        return orderService.findOne(id)
+    public EntityModel<OrderDto> getOne(@PathVariable("id") Long id) {
+        OrderDto orderDto = orderService.findOne(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
+        return assembler.toModel(orderDto);
+    }
+
+    /**
+     * Gets user orders with the specified user id
+     *
+     * @param id a user's id
+     * @return an order data transfer object
+     */
+    @GetMapping("/users/{id}")
+    public CollectionModel<EntityModel<OrderDto>> getUserOrders(@PathVariable("id") Long id) {
+        List<EntityModel<OrderDto>> orders = orderService.findByUserId(id).stream()
+                .map(assembler::toModel).toList();
+        return CollectionModel.of(orders, linkTo(methodOn(OrderController.class)).withSelfRel());
     }
 
     /**
@@ -58,16 +82,5 @@ public class OrderController {
         } catch (ServiceException e) {
             throw new ResourceNotFoundException(orderDto.getId());
         }
-    }
-
-    /**
-     * Gets user orders with the specified user id
-     *
-     * @param id a user's id
-     * @return an order data transfer object
-     */
-    @GetMapping("/users/{id}")
-    public List<OrderDto> getUserOrders(@PathVariable("id") Long id) {
-        return orderService.findByUserId(id);
     }
 }
