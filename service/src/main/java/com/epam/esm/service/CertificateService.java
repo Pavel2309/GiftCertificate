@@ -12,13 +12,6 @@ import java.util.Optional;
  */
 public interface CertificateService {
     /**
-     * Finds all certificates.
-     *
-     * @return a list of certificate objects
-     */
-    List<Certificate> findAll();
-
-    /**
      * Finds all certificates with specified parameters such as search query, tags and sort.
      *
      * @param parameters a map of request parameters
@@ -33,6 +26,8 @@ public interface CertificateService {
      * @return an optional object of a certificate
      */
     Optional<Certificate> findOne(Long id);
+
+    List<Certificate> findByOrderId(Long id);
 
     /**
      * Creates a new certificate.

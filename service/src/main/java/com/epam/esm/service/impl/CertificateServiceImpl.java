@@ -25,30 +25,17 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<Certificate> findAll() {
-        List<Certificate> certificates = certificateRepository.findAll();
-        certificates.forEach(certificate ->
-                certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
-        return certificates;
-    }
-
-    @Override
     public Optional<Certificate> findOne(Long id) {
-//        Optional<Certificate> certificate = certificateRepository.findOne(id);
-//        if (certificate.isPresent()) {
-//            certificate.get().setTags(tagRepository.findByCertificateId(certificate.get().getId()));
-//            return certificate;
-//        } else {
-//            return Optional.empty();
-//        }
         return certificateRepository.findOne(id);
     }
 
     @Override
+    public List<Certificate> findByOrderId(Long id) {
+        return certificateRepository.findByOrderId(id);
+    }
+
+    @Override
     public List<Certificate> findWithParameters(Map<String, String> parameters) {
-//        if (parameters.isEmpty()) {
-//            return findAll();
-//        }
         List<Certificate> certificates = certificateRepository.findAllWithParameters(parameters);
         certificates.forEach(certificate ->
                 certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
@@ -59,13 +46,11 @@ public class CertificateServiceImpl implements CertificateService {
     public Certificate create(Certificate certificate) {
         certificate.setCreateDate(LocalDateTime.now());
         certificate.setUpdateDate(LocalDateTime.now());
-        Certificate createdCertificate = certificateRepository.create(certificate);
         if (certificate.getTags() != null) {
             Set<Tag> tags = saveTags(certificate.getTags());
-            createdCertificate.setTags(tags);
-            certificateRepository.linkCertificateWithTags(createdCertificate);
+            certificate.setTags(tags);
         }
-        return createdCertificate;
+        return certificateRepository.create(certificate);
     }
 
     @Override
@@ -77,10 +62,9 @@ public class CertificateServiceImpl implements CertificateService {
         Optional.ofNullable(certificate.getPrice()).ifPresent(certificateForUpdate::setPrice);
         Optional.ofNullable(certificate.getDuration()).ifPresent(certificateForUpdate::setDuration);
         if (certificate.getTags() != null) {
-            certificateRepository.unlinkCertificateWithTags(certificateForUpdate.getId());
+            //certificateRepository.unlinkCertificateWithTags(certificateForUpdate.getId());
             Set<Tag> tags = saveTags(certificate.getTags());
             certificateForUpdate.setTags(tags);
-            certificateRepository.linkCertificateWithTags(certificateForUpdate);
         }
         certificateRepository.update(certificateForUpdate);
         return certificateForUpdate;
@@ -88,7 +72,6 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public boolean delete(Long id) {
-        certificateRepository.unlinkCertificateWithTags(id);
         return certificateRepository.delete(id);
     }
 

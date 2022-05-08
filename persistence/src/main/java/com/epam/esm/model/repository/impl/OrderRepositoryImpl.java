@@ -1,8 +1,12 @@
 package com.epam.esm.model.repository.impl;
 
+import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Order;
+import com.epam.esm.model.entity.User;
 import com.epam.esm.model.mapper.OrderRowMapper;
 import com.epam.esm.model.repository.OrderRepository;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,6 +14,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Query;
+import javax.persistence.criteria.*;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -21,13 +27,15 @@ import static com.epam.esm.model.query.OrderQueryHolder.*;
 @Repository
 public class OrderRepositoryImpl implements OrderRepository {
 
+    private final SessionFactory sessionFactory;
     private final JdbcTemplate jdbcTemplate;
     private final OrderRowMapper orderRowMapper;
 
     @Autowired
-    public OrderRepositoryImpl(JdbcTemplate jdbcTemplate, OrderRowMapper orderRowMapper) {
+    public OrderRepositoryImpl(JdbcTemplate jdbcTemplate, OrderRowMapper orderRowMapper, SessionFactory sessionFactory) {
         this.jdbcTemplate = jdbcTemplate;
         this.orderRowMapper = orderRowMapper;
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
@@ -46,7 +54,10 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     @Override
     public List<Order> findOrdersByUserId(Long id) {
-        return jdbcTemplate.query(SQL_FIND_ALL_ORDERS_BY_USER_ID, orderRowMapper, id);
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery("from Order o WHERE o.user.id = :id");
+        query.setParameter("id", id);
+        return query.getResultList();
     }
 
     @Override

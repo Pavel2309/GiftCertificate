@@ -54,6 +54,9 @@ public final class CertificateQueryHolder {
             WHERE ohc.orders_id = ?
             """;
 
+    public static final String HQL_FIND_BY_ORDER_ID = "SELECT o.certificates FROM Order o WHERE o.user.id = :id";
+    public static final String HQL_DELETE_BY_ID = "DELETE FROM Certificate c WHERE c.id = :id";
+
     private CertificateQueryHolder() {
     }
 }

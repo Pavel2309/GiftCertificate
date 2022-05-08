@@ -32,6 +32,7 @@ public class Order {
 
     private BigDecimal price;
 
+    @Column(name = "purchase_date")
     private Timestamp purchaseDate;
 
 }

@@ -47,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDto> findByUserId(Long id) {
         List<Order> orders = orderRepository.findOrdersByUserId(id);
         List<OrderDto> orderDtos = new ArrayList<>(orders.size());
-        populateCertificatesAndTags(orders).forEach(order -> orderDtos.add(orderConverter.convertEntityToDto(order)));
+        orders.forEach(order -> orderDtos.add(orderConverter.convertEntityToDto(order)));
         return orderDtos;
     }
 

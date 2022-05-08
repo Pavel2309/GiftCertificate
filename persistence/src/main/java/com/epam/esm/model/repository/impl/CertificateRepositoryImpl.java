@@ -1,23 +1,16 @@
 package com.epam.esm.model.repository.impl;
 
 import com.epam.esm.model.entity.Certificate;
-import com.epam.esm.model.mapper.CertificateRowMapper;
-import com.epam.esm.model.query.impl.CertificateQueryBuilder;
 import com.epam.esm.model.query.impl.HibernateCertificateQueryBuilder;
 import com.epam.esm.model.repository.CertificateRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.epam.esm.model.query.CertificateQueryHolder.*;
@@ -26,43 +19,32 @@ import static com.epam.esm.model.query.CertificateQueryHolder.*;
 public class CertificateRepositoryImpl implements CertificateRepository {
 
     private final SessionFactory sessionFactory;
-    private final JdbcTemplate jdbcTemplate;
-    private final CertificateRowMapper certificateRowMapper;
-    private final CertificateQueryBuilder queryBuilder;
     private final HibernateCertificateQueryBuilder hibernateCertificateQueryBuilder;
 
-    public CertificateRepositoryImpl(JdbcTemplate jdbcTemplate,
-                                     CertificateRowMapper certificateRowMapper,
-                                     CertificateQueryBuilder queryBuilder,
-                                     SessionFactory sessionFactory,
+    public CertificateRepositoryImpl(SessionFactory sessionFactory,
                                      HibernateCertificateQueryBuilder hibernateCertificateQueryBuilder) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.certificateRowMapper = certificateRowMapper;
-        this.queryBuilder = queryBuilder;
         this.sessionFactory = sessionFactory;
         this.hibernateCertificateQueryBuilder = hibernateCertificateQueryBuilder;
     }
 
     @Override
     public List<Certificate> findAll() {
-        return jdbcTemplate.query(SQL_FIND_ALL_CERTIFICATES, certificateRowMapper);
+        throw new UnsupportedOperationException("find all is not supported");
     }
 
     @Override
     public List<Certificate> findAllWithParameters(Map<String, String> parameters) {
         Session session = sessionFactory.getCurrentSession();
         Query query = hibernateCertificateQueryBuilder.buildQuery(session, parameters);
-
         return query.getResultList();
-
-//        String query = queryBuilder.buildQuery(SQL_FIND_ALL_CERTIFICATES_WITH_TAGS, parameters);
-//        List<String> arguments = queryBuilder.extractQueryArguments(parameters);
-//        return jdbcTemplate.query(query, certificateRowMapper, arguments.toArray());
     }
 
     @Override
     public List<Certificate> findByOrderId(Long id) {
-        return jdbcTemplate.query(SQL_FIND_CERTIFICATES_BY_ORDER_ID, certificateRowMapper, id);
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(HQL_FIND_BY_ORDER_ID);
+        query.setParameter("id", id);
+        return query.getResultList();
     }
 
     @Override
@@ -72,63 +54,25 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     }
 
     @Override
+    @Transactional
     public Certificate create(Certificate certificate) {
-        KeyHolder key = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement statement = con.prepareStatement(SQL_CREATE_CERTIFICATE, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, certificate.getTitle());
-            statement.setString(2, certificate.getDescription());
-            statement.setBigDecimal(3, certificate.getPrice());
-            statement.setInt(4, certificate.getDuration());
-            statement.setObject(5, certificate.getCreateDate());
-            statement.setObject(6, certificate.getUpdateDate());
-            return statement;
-        }, key);
-        certificate.setId(Objects.requireNonNull(key.getKey()).longValue());
+        sessionFactory.getCurrentSession().save(certificate);
         return certificate;
     }
 
     @Override
+    @Transactional
     public Certificate update(Certificate certificate) {
-        jdbcTemplate.update(SQL_UPDATE_CERTIFICATE,
-                certificate.getTitle(),
-                certificate.getDescription(),
-                certificate.getPrice(),
-                certificate.getDuration(),
-                certificate.getCreateDate(),
-                certificate.getUpdateDate(),
-                certificate.getId());
+        sessionFactory.getCurrentSession().update(certificate);
         return certificate;
     }
 
     @Override
+    @Transactional
     public boolean delete(Long id) {
-        return jdbcTemplate.update(SQL_DELETE_CERTIFICATE, id) == 1;
-    }
-
-    @Override
-    public boolean linkCertificateWithTags(Certificate certificate) {
-        boolean result = false;
-        if (certificate.getTags() != null) {
-            certificate.getTags().forEach(tag -> {
-                jdbcTemplate.update(con -> {
-                    PreparedStatement statement = con.prepareStatement(SQL_LINK_CERTIFICATE_WITH_TAG, Statement.RETURN_GENERATED_KEYS);
-                    statement.setLong(1, certificate.getId());
-                    statement.setLong(2, tag.getId());
-                    return statement;
-                });
-            });
-            result = true;
-        }
-        return result;
-    }
-
-    @Override
-    public boolean unlinkCertificateWithTags(Long id) {
-        return jdbcTemplate.update(con -> {
-            PreparedStatement statement = con.prepareStatement(SQL_UNLINK_CERTIFICATE_WITH_TAG);
-            statement.setLong(1, id);
-            return statement;
-        }) >= 1;
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(HQL_DELETE_BY_ID);
+        query.setParameter("id", id);
+        return query.executeUpdate() >= 1;
     }
 }

@@ -45,6 +45,14 @@ public class CertificateController {
         return assembler.toModel(certificate);
     }
 
+    @GetMapping("/orders/{id}")
+    public CollectionModel<EntityModel<Certificate>> getByOrderId(@PathVariable("id") Long id) {
+        List<EntityModel<Certificate>> certificates = certificateService.findByOrderId(id).stream()
+                .map(assembler::toModel)
+                .toList();
+        return CollectionModel.of(certificates, linkTo(methodOn(CertificateController.class).getByOrderId(id)).withSelfRel());
+    }
+
     /**
      * Gets a list of certificate with the specified parameters.
      *

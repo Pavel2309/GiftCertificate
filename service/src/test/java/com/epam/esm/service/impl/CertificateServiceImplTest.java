@@ -55,13 +55,6 @@ class CertificateServiceImplTest {
     }
 
     @Test
-    void findAll() {
-        Mockito.when(certificateRepository.findAll()).thenReturn(certificateList);
-        List<Certificate> certificates = service.findAll();
-        Assertions.assertEquals(certificates, certificateList);
-    }
-
-    @Test
     void findOne() {
         Mockito.when(certificateRepository.findOne(1L)).thenReturn(Optional.of(certificateOne));
         Optional<Certificate> certificate = service.findOne(1L);

@@ -24,7 +24,7 @@ import java.util.Set;
 public class Certificate implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Size(max = 128, message = "a title can't exceed 128 characters")
