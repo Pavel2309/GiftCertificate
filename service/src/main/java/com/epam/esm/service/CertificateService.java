@@ -2,6 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.entity.Certificate;
+import org.springframework.hateoas.PagedModel;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ public interface CertificateService {
      * @param parameters a map of request parameters
      * @return a list of certificate objects
      */
-    List<Certificate> findWithParameters(Map<String, String> parameters);
+    PagedModel<Certificate> findWithParameters(Map<String, String> parameters);
 
     /**
      * Finds one certificate with the specified id.

@@ -7,6 +7,7 @@ import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.service.impl.CertificateServiceImpl;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,6 +46,12 @@ public class CertificateController {
         return assembler.toModel(certificate);
     }
 
+    /**
+     * Gets a list of certificates with the specified order id.
+     *
+     * @param id an order's id
+     * @return a list of certificates
+     */
     @GetMapping("/orders/{id}")
     public CollectionModel<EntityModel<Certificate>> getByOrderId(@PathVariable("id") Long id) {
         List<EntityModel<Certificate>> certificates = certificateService.findByOrderId(id).stream()
@@ -60,11 +67,9 @@ public class CertificateController {
      * @return a list of certificates
      */
     @GetMapping
-    public CollectionModel<EntityModel<Certificate>> getWithParameters(@RequestParam Map<String, String> parameters) {
-        List<EntityModel<Certificate>> certificates = certificateService.findWithParameters(parameters).stream()
-                .map(assembler::toModel)
-                .toList();
-        return CollectionModel.of(certificates, linkTo(methodOn(CertificateController.class).getWithParameters(parameters)).withSelfRel());
+    public PagedModel<EntityModel<Certificate>> getWithParameters(@RequestParam Map<String, String> parameters) {
+        PagedModel<Certificate> certificates = certificateService.findWithParameters(parameters);
+        return assembler.toCollectionModel(certificates, parameters);
     }
 
     /**

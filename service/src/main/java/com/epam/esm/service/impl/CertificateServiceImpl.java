@@ -7,6 +7,7 @@ import com.epam.esm.model.repository.CertificateRepository;
 import com.epam.esm.model.repository.TagRepository;
 import com.epam.esm.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,11 +36,8 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<Certificate> findWithParameters(Map<String, String> parameters) {
-        List<Certificate> certificates = certificateRepository.findAllWithParameters(parameters);
-        certificates.forEach(certificate ->
-                certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
-        return certificates;
+    public PagedModel<Certificate> findWithParameters(Map<String, String> parameters) {
+        return certificateRepository.findAllWithParameters(parameters);
     }
 
     @Override

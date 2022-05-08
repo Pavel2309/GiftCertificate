@@ -2,7 +2,6 @@ package com.epam.esm.model.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -52,6 +51,5 @@ public class Certificate implements Serializable {
     @JoinTable(name = "certificates_has_tags",
             joinColumns = @JoinColumn(name = "certificates_id"),
             inverseJoinColumns = @JoinColumn(name = "tags_id"))
-    @ToString.Exclude
     private Set<@Valid Tag> tags = new HashSet<>();
 }

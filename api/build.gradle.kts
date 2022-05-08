@@ -7,7 +7,6 @@ dependencies {
 
     implementation(project(":service"))
 
-    implementation("org.springframework.boot:spring-boot-starter-hateoas:2.6.7")
 
     providedCompile("javax.servlet:javax.servlet-api:4.0.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")

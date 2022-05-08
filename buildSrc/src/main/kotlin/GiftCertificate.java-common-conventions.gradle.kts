@@ -18,6 +18,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 
     implementation("org.springframework.boot:spring-boot-starter-web:2.6.7")
+    implementation("org.springframework.boot:spring-boot-starter-hateoas:2.6.7")
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.7")
 
     testImplementation("junit:junit-dep:4.11")

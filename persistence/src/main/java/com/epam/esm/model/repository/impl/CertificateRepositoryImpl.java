@@ -5,6 +5,7 @@ import com.epam.esm.model.query.impl.HibernateCertificateQueryBuilder;
 import com.epam.esm.model.repository.CertificateRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
@@ -33,10 +34,12 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     }
 
     @Override
-    public List<Certificate> findAllWithParameters(Map<String, String> parameters) {
+    public PagedModel<Certificate> findAllWithParameters(Map<String, String> parameters) {
         Session session = sessionFactory.getCurrentSession();
         Query query = hibernateCertificateQueryBuilder.buildQuery(session, parameters);
-        return query.getResultList();
+        PagedModel.PageMetadata pageMetadata = hibernateCertificateQueryBuilder.paginateQuery(query, parameters);
+        List<Certificate> certificates = query.getResultList();
+        return PagedModel.of(certificates, pageMetadata);
     }
 
     @Override
