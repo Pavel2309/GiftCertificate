@@ -39,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
     public List<OrderDto> findAll() {
         List<Order> orders = orderRepository.findAll();
         List<OrderDto> orderDtos = new ArrayList<>(orders.size());
-        populateCertificatesAndTags(orders).forEach(order -> orderDtos.add(orderConverter.convertEntityToDto(order)));
+        orders.forEach(order -> orderDtos.add(orderConverter.convertEntityToDto(order)));
         return orderDtos;
     }
 
@@ -75,26 +75,7 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.delete(id);
     }
 
-    private List<Order> populateCertificatesAndTags(List<Order> orders) {
-        orders.forEach(order -> {
-            List<Certificate> certificates = certificateRepository.findByOrderId(order.getId());
-            certificates.forEach(certificate ->
-                    certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
-            order.setCertificates(certificates);
-        });
-        return orders;
-    }
-
     private Optional<Order> findOneOrder(Long id) {
-        Optional<Order> order = orderRepository.findOne(id);
-        if (order.isPresent()) {
-            List<Certificate> certificates = certificateRepository.findByOrderId(order.get().getId());
-            certificates.forEach(certificate ->
-                    certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
-            order.get().setCertificates(certificates);
-            return order;
-        } else {
-            return Optional.empty();
+            return orderRepository.findOne(id);
         }
-    }
 }

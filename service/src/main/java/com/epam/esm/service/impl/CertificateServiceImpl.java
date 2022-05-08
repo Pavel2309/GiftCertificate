@@ -31,8 +31,8 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<Certificate> findByOrderId(Long id) {
-        return certificateRepository.findByOrderId(id);
+    public PagedModel<Certificate> findByOrderId(Long id, Map<String, String> parameters) {
+        return certificateRepository.findByOrderId(id, parameters);
     }
 
     @Override

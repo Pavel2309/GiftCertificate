@@ -28,7 +28,7 @@ public interface CertificateService {
      */
     Optional<Certificate> findOne(Long id);
 
-    List<Certificate> findByOrderId(Long id);
+    PagedModel<Certificate> findByOrderId(Long id, Map<String, String> parameters);
 
     /**
      * Creates a new certificate.

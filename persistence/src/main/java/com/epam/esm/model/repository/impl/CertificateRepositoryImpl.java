@@ -43,11 +43,13 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     }
 
     @Override
-    public List<Certificate> findByOrderId(Long id) {
+    public PagedModel<Certificate> findByOrderId(Long id, Map<String, String> parameters) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery(HQL_FIND_BY_ORDER_ID);
         query.setParameter("id", id);
-        return query.getResultList();
+        PagedModel.PageMetadata pageMetadata = hibernateCertificateQueryBuilder.paginateQuery(query, parameters);
+        List<Certificate> certificates = query.getResultList();
+        return PagedModel.of(certificates, pageMetadata);
     }
 
     @Override

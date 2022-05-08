@@ -12,11 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Map;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * The REST API Certificate controller.
@@ -53,11 +49,9 @@ public class CertificateController {
      * @return a list of certificates
      */
     @GetMapping("/orders/{id}")
-    public CollectionModel<EntityModel<Certificate>> getByOrderId(@PathVariable("id") Long id) {
-        List<EntityModel<Certificate>> certificates = certificateService.findByOrderId(id).stream()
-                .map(assembler::toModel)
-                .toList();
-        return CollectionModel.of(certificates, linkTo(methodOn(CertificateController.class).getByOrderId(id)).withSelfRel());
+    public CollectionModel<EntityModel<Certificate>> getByOrderId(@PathVariable("id") Long id, @RequestParam Map<String, String> parameters) {
+        PagedModel<Certificate> certificates = certificateService.findByOrderId(id, parameters);
+        return assembler.toCollectionModel(certificates, parameters);
     }
 
     /**

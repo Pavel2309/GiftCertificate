@@ -20,7 +20,8 @@ public class CertificateModelAssembler implements RepresentationModelAssembler<C
     @Override
     public EntityModel<Certificate> toModel(Certificate certificate) {
         return EntityModel.of(certificate,
-                linkTo(methodOn(CertificateController.class).getOne(certificate.getId())).withSelfRel());
+                linkTo(methodOn(CertificateController.class).getOne(certificate.getId())).withSelfRel(),
+                linkTo(methodOn(CertificateController.class).getWithParameters(null)).withRel("certificates"));
     }
 
     public PagedModel<EntityModel<Certificate>> toCollectionModel(PagedModel<Certificate> certificates, Map<String, String> parameters) {
@@ -34,7 +35,7 @@ public class CertificateModelAssembler implements RepresentationModelAssembler<C
         parameters.putIfAbsent("page", String.valueOf(1));
         parameters.replace("page", String.valueOf(1));
         links.add(linkTo(methodOn(CertificateController.class).getWithParameters(parameters)).withRel("first page"));
-        if (metadata.getNumber() > 1) {
+        if (metadata.getNumber() > 1 && metadata.getNumber() <= metadata.getTotalPages()) {
             parameters.replace("page", String.valueOf(metadata.getNumber() - 1));
             links.add(linkTo(methodOn(CertificateController.class).getWithParameters(parameters)).withRel("previous page"));
         }

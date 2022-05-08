@@ -25,5 +25,5 @@ public interface CertificateRepository extends CommonRepository<Certificate, Lon
      * @param id a order's id
      * @return a list of certificate objects
      */
-    List<Certificate> findByOrderId(Long id);
+    PagedModel<Certificate> findByOrderId(Long id, Map<String, String> parameters);
 }
