@@ -3,13 +3,16 @@ package com.epam.esm.model.repository.impl;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.mapper.CertificateRowMapper;
 import com.epam.esm.model.query.impl.CertificateQueryBuilder;
+import com.epam.esm.model.query.impl.HibernateCertificateQueryBuilder;
 import com.epam.esm.model.repository.CertificateRepository;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.Query;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -17,21 +20,27 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.epam.esm.model.repository.CertificateQueryHolder.*;
+import static com.epam.esm.model.query.CertificateQueryHolder.*;
 
 @Repository
 public class CertificateRepositoryImpl implements CertificateRepository {
 
+    private final SessionFactory sessionFactory;
     private final JdbcTemplate jdbcTemplate;
     private final CertificateRowMapper certificateRowMapper;
     private final CertificateQueryBuilder queryBuilder;
+    private final HibernateCertificateQueryBuilder hibernateCertificateQueryBuilder;
 
     public CertificateRepositoryImpl(JdbcTemplate jdbcTemplate,
                                      CertificateRowMapper certificateRowMapper,
-                                     CertificateQueryBuilder queryBuilder) {
+                                     CertificateQueryBuilder queryBuilder,
+                                     SessionFactory sessionFactory,
+                                     HibernateCertificateQueryBuilder hibernateCertificateQueryBuilder) {
         this.jdbcTemplate = jdbcTemplate;
         this.certificateRowMapper = certificateRowMapper;
         this.queryBuilder = queryBuilder;
+        this.sessionFactory = sessionFactory;
+        this.hibernateCertificateQueryBuilder = hibernateCertificateQueryBuilder;
     }
 
     @Override
@@ -41,9 +50,14 @@ public class CertificateRepositoryImpl implements CertificateRepository {
 
     @Override
     public List<Certificate> findAllWithParameters(Map<String, String> parameters) {
-        String query = queryBuilder.buildQuery(SQL_FIND_ALL_CERTIFICATES_WITH_TAGS, parameters);
-        List<String> arguments = queryBuilder.extractQueryArguments(parameters);
-        return jdbcTemplate.query(query, certificateRowMapper, arguments.toArray());
+        Session session = sessionFactory.getCurrentSession();
+        Query query = hibernateCertificateQueryBuilder.buildQuery(session, parameters);
+
+        return query.getResultList();
+
+//        String query = queryBuilder.buildQuery(SQL_FIND_ALL_CERTIFICATES_WITH_TAGS, parameters);
+//        List<String> arguments = queryBuilder.extractQueryArguments(parameters);
+//        return jdbcTemplate.query(query, certificateRowMapper, arguments.toArray());
     }
 
     @Override
@@ -53,11 +67,8 @@ public class CertificateRepositoryImpl implements CertificateRepository {
 
     @Override
     public Optional<Certificate> findOne(Long id) {
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_FIND_CERTIFICATE_BY_ID, certificateRowMapper, id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        Certificate certificate = sessionFactory.getCurrentSession().get(Certificate.class, id);
+        return Optional.ofNullable(certificate);
     }
 
     @Override
@@ -69,8 +80,8 @@ public class CertificateRepositoryImpl implements CertificateRepository {
             statement.setString(2, certificate.getDescription());
             statement.setBigDecimal(3, certificate.getPrice());
             statement.setInt(4, certificate.getDuration());
-            statement.setObject(5, certificate.getCreateTime());
-            statement.setObject(6, certificate.getUpdateTime());
+            statement.setObject(5, certificate.getCreateDate());
+            statement.setObject(6, certificate.getUpdateDate());
             return statement;
         }, key);
         certificate.setId(Objects.requireNonNull(key.getKey()).longValue());
@@ -84,8 +95,8 @@ public class CertificateRepositoryImpl implements CertificateRepository {
                 certificate.getDescription(),
                 certificate.getPrice(),
                 certificate.getDuration(),
-                certificate.getCreateTime(),
-                certificate.getUpdateTime(),
+                certificate.getCreateDate(),
+                certificate.getUpdateDate(),
                 certificate.getId());
         return certificate;
     }

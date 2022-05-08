@@ -13,7 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.*;
 
-import static com.epam.esm.model.repository.TagQueryHolder.*;
+import static com.epam.esm.model.query.TagQueryHolder.*;
 
 @Repository
 public class TagRepositoryImpl implements TagRepository {

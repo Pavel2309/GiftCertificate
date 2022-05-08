@@ -136,6 +136,7 @@ public class CertificateQueryBuilder implements QueryBuilder {
         return query.toString();
     }
 
+
     public ArrayList<String> extractQueryArguments(Map<String, String> parameters) {
         ArrayList<String> arguments = new ArrayList<>();
         if (parameters.containsKey(TAG_TITLE)) {

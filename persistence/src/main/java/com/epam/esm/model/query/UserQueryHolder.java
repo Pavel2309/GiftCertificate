@@ -1,4 +1,4 @@
-package com.epam.esm.model.repository;
+package com.epam.esm.model.query;
 
 public class UserQueryHolder {
 

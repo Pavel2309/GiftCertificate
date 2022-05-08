@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-import static com.epam.esm.model.repository.UserQueryHolder.SQL_FIND_ALL_USERS;
-import static com.epam.esm.model.repository.UserQueryHolder.SQL_FIND_USER_BY_ID;
+import static com.epam.esm.model.query.UserQueryHolder.SQL_FIND_ALL_USERS;
+import static com.epam.esm.model.query.UserQueryHolder.SQL_FIND_USER_BY_ID;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {

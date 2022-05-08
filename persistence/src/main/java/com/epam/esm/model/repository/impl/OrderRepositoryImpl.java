@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.epam.esm.model.repository.OrderQueryHolder.*;
+import static com.epam.esm.model.query.OrderQueryHolder.*;
 
 @Repository
 public class OrderRepositoryImpl implements OrderRepository {

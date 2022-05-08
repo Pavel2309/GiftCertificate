@@ -34,13 +34,14 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public Optional<Certificate> findOne(Long id) {
-        Optional<Certificate> certificate = certificateRepository.findOne(id);
-        if (certificate.isPresent()) {
-            certificate.get().setTags(tagRepository.findByCertificateId(certificate.get().getId()));
-            return certificate;
-        } else {
-            return Optional.empty();
-        }
+//        Optional<Certificate> certificate = certificateRepository.findOne(id);
+//        if (certificate.isPresent()) {
+//            certificate.get().setTags(tagRepository.findByCertificateId(certificate.get().getId()));
+//            return certificate;
+//        } else {
+//            return Optional.empty();
+//        }
+        return certificateRepository.findOne(id);
     }
 
     @Override
@@ -56,8 +57,8 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public Certificate create(Certificate certificate) {
-        certificate.setCreateTime(LocalDateTime.now());
-        certificate.setUpdateTime(LocalDateTime.now());
+        certificate.setCreateDate(LocalDateTime.now());
+        certificate.setUpdateDate(LocalDateTime.now());
         Certificate createdCertificate = certificateRepository.create(certificate);
         if (certificate.getTags() != null) {
             Set<Tag> tags = saveTags(certificate.getTags());
@@ -70,7 +71,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public Certificate update(long id, Certificate certificate) throws ServiceException {
         Certificate certificateForUpdate = findOne(id).orElseThrow(ServiceException::new);
-        certificateForUpdate.setUpdateTime(LocalDateTime.now());
+        certificateForUpdate.setUpdateDate(LocalDateTime.now());
         Optional.ofNullable(certificate.getTitle()).ifPresent(certificateForUpdate::setTitle);
         Optional.ofNullable(certificate.getDescription()).ifPresent(certificateForUpdate::setDescription);
         Optional.ofNullable(certificate.getPrice()).ifPresent(certificateForUpdate::setPrice);

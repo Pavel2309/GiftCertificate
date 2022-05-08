@@ -19,8 +19,8 @@ public class CertificateRowMapper implements RowMapper<Certificate> {
             certificate.setDescription(rs.getString(DatabaseColumnName.CERTIFICATE_DESCRIPTION));
             certificate.setPrice(rs.getBigDecimal(DatabaseColumnName.CERTIFICATE_PRICE));
             certificate.setDuration(rs.getInt(DatabaseColumnName.CERTIFICATE_DURATION));
-            certificate.setCreateTime(rs.getObject(DatabaseColumnName.CERTIFICATE_CREATE_DATE, LocalDateTime.class));
-            certificate.setUpdateTime(rs.getObject(DatabaseColumnName.CERTIFICATE_UPDATE_DATE, LocalDateTime.class));
+            certificate.setCreateDate(rs.getObject(DatabaseColumnName.CERTIFICATE_CREATE_DATE, LocalDateTime.class));
+            certificate.setUpdateDate(rs.getObject(DatabaseColumnName.CERTIFICATE_UPDATE_DATE, LocalDateTime.class));
             return certificate;
         } catch (SQLException e) {
             return null;
