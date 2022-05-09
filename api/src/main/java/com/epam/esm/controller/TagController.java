@@ -4,16 +4,15 @@ import com.epam.esm.assembler.TagModelAssembler;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.impl.TagServiceImpl;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Map;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * The REST API Tag controller.
@@ -33,14 +32,13 @@ public class TagController {
     /**
      * Gets all tags.
      *
+     * @param parameters a page and size parameters for pagination
      * @return a list of tag objects
      */
     @GetMapping
-    public CollectionModel<EntityModel<Tag>> getAll() {
-        List<EntityModel<Tag>> tags = tagService.findAll().stream()
-                .map(assembler::toModel)
-                .toList();
-        return CollectionModel.of(tags, linkTo(methodOn(TagController.class).getAll()).withSelfRel());
+    public PagedModel<EntityModel<Tag>> getAll(@RequestParam Map<String, String> parameters) {
+        PagedModel<Tag> certificates = tagService.findAll(parameters);
+        return assembler.toPageModel(certificates, parameters);
     }
 
     /**

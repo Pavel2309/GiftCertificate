@@ -29,6 +29,11 @@ public final class TagQueryHolder {
             DELETE FROM tags WHERE tags.id = ?
             """;
 
+    public static final String HQL_FIND_ALL = "FROM Tag t";
+    public static final String HQL_FIND_BY_TITLE = "FROM Tag t WHERE t.title = :title";
+    public static final String HQL_DELETE_BY_ID = "DELETE FROM Tag t WHERE t.id = :id";
+    public static final String HQL_FIND_BY_CERTIFICATE_ID = "SELECT t FROM Tag t INNER JOIN Certificate c WHERE c.id = :id";
+
     private TagQueryHolder() {
     }
 }

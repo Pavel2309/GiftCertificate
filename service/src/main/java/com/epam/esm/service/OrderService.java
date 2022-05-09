@@ -3,8 +3,10 @@ package com.epam.esm.service;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.OrderDto;
 import com.epam.esm.model.entity.Order;
+import org.springframework.hateoas.PagedModel;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -14,17 +16,19 @@ public interface OrderService {
     /**
      * Finds all orders.
      *
-     * @return a list of order data transfer objects
+     * @param pageParameters the page number and size parameters
+     * @return a page model object of order data transfer object
      */
-    List<OrderDto> findAll();
+    PagedModel<OrderDto> findAll(Map<String, String> pageParameters);
 
     /**
      * Finds all orders with the specified user id.
      *
      * @param id a user's id
-     * @return a list of order data transfer objects
+     * @param pageParameters the page number and size parameters
+     * @return a page model object of order data transfer object
      */
-    List<OrderDto> findByUserId(Long id);
+    PagedModel<OrderDto> findByUserId(Long id, Map<String, String> pageParameters);
 
     /**
      * Finds one order with the specified id.

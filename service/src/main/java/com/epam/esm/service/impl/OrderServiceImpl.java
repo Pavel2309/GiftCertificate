@@ -3,57 +3,49 @@ package com.epam.esm.service.impl;
 import com.epam.esm.converter.impl.OrderConverter;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.OrderDto;
-import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.entity.Order;
 import com.epam.esm.model.repository.CertificateRepository;
 import com.epam.esm.model.repository.OrderRepository;
 import com.epam.esm.model.repository.TagRepository;
 import com.epam.esm.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
-    private final CertificateRepository certificateRepository;
-    private final TagRepository tagRepository;
     private final OrderConverter orderConverter;
 
     @Autowired
     public OrderServiceImpl(OrderRepository orderRepository,
-                            CertificateRepository certificateRepository,
-                            TagRepository tagRepository,
                             OrderConverter orderConverter) {
         this.orderRepository = orderRepository;
-        this.certificateRepository = certificateRepository;
-        this.tagRepository = tagRepository;
         this.orderConverter = orderConverter;
     }
 
     @Override
-    public List<OrderDto> findAll() {
-        List<Order> orders = orderRepository.findAll();
-        List<OrderDto> orderDtos = new ArrayList<>(orders.size());
-        orders.forEach(order -> orderDtos.add(orderConverter.convertEntityToDto(order)));
-        return orderDtos;
+    public PagedModel<OrderDto> findAll(Map<String, String> parameters) {
+        PagedModel<Order> orders = orderRepository.findAll(parameters);
+        List<OrderDto> orderDtos = orders.getContent().stream().map(orderConverter::convertEntityToDto).toList();
+        return PagedModel.of(orderDtos, orders.getMetadata());
     }
 
     @Override
-    public List<OrderDto> findByUserId(Long id) {
-        List<Order> orders = orderRepository.findOrdersByUserId(id);
-        List<OrderDto> orderDtos = new ArrayList<>(orders.size());
-        orders.forEach(order -> orderDtos.add(orderConverter.convertEntityToDto(order)));
-        return orderDtos;
+    public PagedModel<OrderDto> findByUserId(Long id, Map<String, String> parameters) {
+        PagedModel<Order> orders = orderRepository.findOrdersByUserId(id, parameters);
+        List<OrderDto> orderDtos = orders.getContent().stream().map(orderConverter::convertEntityToDto).toList();
+        return PagedModel.of(orderDtos, orders.getMetadata());
     }
 
     @Override
     public Optional<OrderDto> findOne(Long id) {
-        Optional<Order> order = findOneOrder(id);
+        Optional<Order> order = orderRepository.findOne(id);
         return order.map(orderConverter::convertEntityToDto);
     }
 
@@ -62,7 +54,6 @@ public class OrderServiceImpl implements OrderService {
         orderDto.setUserId(orderDto.getUserId());
         Order order = orderConverter.convertDtoToEntity(orderDto);
         Order createdOrder = orderRepository.create(order);
-        orderRepository.linkOrderWithCertificates(createdOrder);
         orderDto.setId(createdOrder.getId());
         orderDto.setPrice(createdOrder.getPrice());
         orderDto.setPurchaseDate(createdOrder.getPurchaseDate());
@@ -71,11 +62,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean delete(Long id) {
-        orderRepository.unlinkOrderWithCertificates(id);
         return orderRepository.delete(id);
     }
-
-    private Optional<Order> findOneOrder(Long id) {
-            return orderRepository.findOne(id);
-        }
 }

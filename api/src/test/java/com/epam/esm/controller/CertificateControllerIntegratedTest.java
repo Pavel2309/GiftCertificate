@@ -19,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;;
+import org.springframework.util.MultiValueMap;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -41,7 +41,6 @@ public class CertificateControllerIntegratedTest {
 
     private static Certificate newCertificate;
     private static Certificate certificateForUpdate;
-    private static Set<Tag> tagList;
 
     private static String asJsonString(final Object obj) {
         try {
@@ -57,7 +56,7 @@ public class CertificateControllerIntegratedTest {
         Tag tagTwo = new Tag();
         tagOne.setTitle("TagOne");
         tagTwo.setTitle("TagTwo");
-        tagList = new HashSet<>();
+        Set<Tag> tagList = new HashSet<>();
         tagList.add(tagOne);
         tagList.add(tagTwo);
 

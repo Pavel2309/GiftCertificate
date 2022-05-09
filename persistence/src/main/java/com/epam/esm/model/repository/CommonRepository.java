@@ -1,6 +1,9 @@
 package com.epam.esm.model.repository;
 
+import org.springframework.hateoas.PagedModel;
+
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -10,12 +13,14 @@ import java.util.Optional;
  * @param <K> a type parameter in CommonRepository
  */
 public interface CommonRepository<T, K> {
+
     /**
      * Finds all entities.
      *
+     * @param parameters the page and side parameters
      * @return a list of entities
      */
-    List<T> findAll();
+    PagedModel<T> findAll(Map<String, String> parameters);
 
     /**
      * Find entity with provided id.

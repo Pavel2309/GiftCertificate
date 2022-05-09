@@ -2,6 +2,7 @@ package com.epam.esm.model.repository;
 
 import com.epam.esm.model.entity.Tag;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,8 +20,9 @@ public interface TagRepository extends CommonRepository<Tag, Long> {
 
     /**
      *  Finds all tags that belong to the specified certificate by certificate's id.
+     *
      * @param id a certificate's id
-     * @return a set of tags
+     * @return a list of tags
      */
-    Set<Tag> findByCertificateId(Long id);
+    List<Tag> findByCertificateId(Long id);
 }

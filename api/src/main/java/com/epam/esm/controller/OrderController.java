@@ -5,15 +5,12 @@ import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.OrderDto;
 import com.epam.esm.service.impl.OrderServiceImpl;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import java.util.Map;
 
 /**
  * The REST API Order controller.
@@ -33,13 +30,13 @@ public class OrderController {
     /**
      * Gets all orders.
      *
+     * @param parameters a page and size parameters for pagination
      * @return a list of order data transfer objects
      */
     @GetMapping
-    public CollectionModel<EntityModel<OrderDto>> getAll() {
-        List<EntityModel<OrderDto>> orders = orderService.findAll().stream()
-                .map(assembler::toModel).toList();
-        return CollectionModel.of(orders, linkTo(methodOn(OrderController.class)).withSelfRel());
+    public PagedModel<EntityModel<OrderDto>> getAll(@RequestParam Map<String, String> parameters) {
+        PagedModel<OrderDto> orderDtos = orderService.findAll(parameters);
+        return assembler.toPageModel(orderDtos, parameters);
     }
 
     /**
@@ -59,20 +56,21 @@ public class OrderController {
      * Gets user orders with the specified user id
      *
      * @param id a user's id
+     * @param parameters a page and size parameters for pagination
      * @return an order data transfer object
      */
     @GetMapping("/users/{id}")
-    public CollectionModel<EntityModel<OrderDto>> getUserOrders(@PathVariable("id") Long id) {
-        List<EntityModel<OrderDto>> orders = orderService.findByUserId(id).stream()
-                .map(assembler::toModel).toList();
-        return CollectionModel.of(orders, linkTo(methodOn(OrderController.class)).withSelfRel());
+    public PagedModel<EntityModel<OrderDto>> getUserOrders(@PathVariable("id") Long id,
+                                                                @RequestParam Map<String, String> parameters) {
+        PagedModel<OrderDto> orderDtos = orderService.findByUserId(id, parameters);
+        return assembler.toPageModel(orderDtos, parameters);
     }
 
     /**
      * Creates a new order
      *
      * @param orderDto an order data transfer object in the JSON format
-     * @return an object of a created certificate
+     * @return a data transfer object of a created order
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

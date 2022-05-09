@@ -1,8 +1,10 @@
 package com.epam.esm.model.repository;
 
 import com.epam.esm.model.entity.Order;
+import org.springframework.hateoas.PagedModel;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * The OrderRepository interface describes data access functionality for the Order entity.
@@ -10,26 +12,12 @@ import java.util.List;
 public interface OrderRepository extends CommonRepository<Order, Long> {
 
     /**
-     * Finds all orders with the specified user id.
+     * Finds all orders with the specified user id and page parameters including page and size.
      *
      * @param id a user's id
-     * @return a list of order objects.
+     * @param parameters page number and size parameters for pagination functionality
+     * @return a list of order objects
      */
-    List<Order> findOrdersByUserId(Long id);
+    PagedModel<Order> findOrdersByUserId(Long id, Map<String, String> parameters);
 
-    /**
-     * Establishes a link between a provided order and its corresponded certificates
-     *
-     * @param order an order object
-     * @return whether an order and its corresponded tags are linked successfully
-     */
-    boolean linkOrderWithCertificates(Order order);
-
-    /**
-     * Removes a link between a provided order and its corresponded certificates
-     *
-     * @param id an order's id
-     * @return whether order's certificates were successfully removed from the order
-     */
-    boolean unlinkOrderWithCertificates(Long id);
 }

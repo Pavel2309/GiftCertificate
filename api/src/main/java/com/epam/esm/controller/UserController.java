@@ -2,13 +2,16 @@ package com.epam.esm.controller;
 
 import com.epam.esm.assembler.UserModelAssembler;
 import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.entity.User;
 import com.epam.esm.service.impl.UserServiceImpl;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -31,14 +34,13 @@ public class UserController {
     /**
      * Gets all users.
      *
+     * @param parameters a page and size parameters for pagination
      * @return a list of user objects
      */
     @GetMapping
-    public CollectionModel<EntityModel<User>> getAll() {
-        List<EntityModel<User>> users = userService.findAll().stream()
-                .map(assembler::toModel)
-                .toList();
-        return CollectionModel.of(users, linkTo(methodOn(TagController.class).getAll()).withSelfRel());
+    public PagedModel<EntityModel<User>> getAll(Map<String, String> parameters) {
+        PagedModel<User> users = userService.findAll(parameters);
+        return assembler.toPageModel(users, parameters);
     }
 
     /**

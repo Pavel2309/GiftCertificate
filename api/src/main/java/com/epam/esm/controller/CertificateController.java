@@ -5,7 +5,6 @@ import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.service.impl.CertificateServiceImpl;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
@@ -33,7 +32,7 @@ public class CertificateController {
      * Gets one certificate with the specified id.
      *
      * @param id a certificate's id
-     * @return a certificate object
+     * @return an entity model object of a certificate
      */
     @GetMapping("/{id}")
     public EntityModel<Certificate> getOne(@PathVariable("id") Long id) {
@@ -46,10 +45,11 @@ public class CertificateController {
      * Gets a list of certificates with the specified order id.
      *
      * @param id an order's id
-     * @return a list of certificates
+     * @param parameters a page and size parameters
+     * @return a paged model object certificates
      */
     @GetMapping("/orders/{id}")
-    public CollectionModel<EntityModel<Certificate>> getByOrderId(@PathVariable("id") Long id, @RequestParam Map<String, String> parameters) {
+    public PagedModel<EntityModel<Certificate>> getByOrderId(@PathVariable("id") Long id, @RequestParam Map<String, String> parameters) {
         PagedModel<Certificate> certificates = certificateService.findByOrderId(id, parameters);
         return assembler.toCollectionModel(certificates, parameters);
     }
@@ -57,8 +57,8 @@ public class CertificateController {
     /**
      * Gets a list of certificate with the specified parameters.
      *
-     * @param parameters a map of request parameters including a tag title, search query and sort
-     * @return a list of certificates
+     * @param parameters a map of request parameters including a tag title, search query, sort, page and size
+     * @return a paged model object certificates
      */
     @GetMapping
     public PagedModel<EntityModel<Certificate>> getWithParameters(@RequestParam Map<String, String> parameters) {

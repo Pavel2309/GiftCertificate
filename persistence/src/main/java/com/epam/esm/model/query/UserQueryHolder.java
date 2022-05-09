@@ -12,6 +12,10 @@ public class UserQueryHolder {
             WHERE users.id = ?
             """;
 
+    public static final String HQL_FIND_ALL = "FROM User u";
+    public static final String HQL_FIND_BY_TITLE = "FROM User u WHERE u.id = :id";
+    public static final String HQL_DELETE_BY_ID = "DELETE FROM User u WHERE u.id = :id";
+
     private UserQueryHolder() {
     }
 }

@@ -1,6 +1,7 @@
 package com.epam.esm.model.repository.impl;
 
 import com.epam.esm.model.entity.Certificate;
+import com.epam.esm.model.query.QueryPaginator;
 import com.epam.esm.model.query.impl.HibernateCertificateQueryBuilder;
 import com.epam.esm.model.repository.CertificateRepository;
 import org.hibernate.Session;
@@ -21,15 +22,18 @@ public class CertificateRepositoryImpl implements CertificateRepository {
 
     private final SessionFactory sessionFactory;
     private final HibernateCertificateQueryBuilder hibernateCertificateQueryBuilder;
+    private final QueryPaginator queryPaginator;
 
     public CertificateRepositoryImpl(SessionFactory sessionFactory,
-                                     HibernateCertificateQueryBuilder hibernateCertificateQueryBuilder) {
+                                     HibernateCertificateQueryBuilder hibernateCertificateQueryBuilder,
+                                     QueryPaginator queryPaginator) {
         this.sessionFactory = sessionFactory;
         this.hibernateCertificateQueryBuilder = hibernateCertificateQueryBuilder;
+        this.queryPaginator = queryPaginator;
     }
 
     @Override
-    public List<Certificate> findAll() {
+    public PagedModel<Certificate> findAll(Map<String, String> parameters) {
         throw new UnsupportedOperationException("find all is not supported");
     }
 
@@ -37,7 +41,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
     public PagedModel<Certificate> findAllWithParameters(Map<String, String> parameters) {
         Session session = sessionFactory.getCurrentSession();
         Query query = hibernateCertificateQueryBuilder.buildQuery(session, parameters);
-        PagedModel.PageMetadata pageMetadata = hibernateCertificateQueryBuilder.paginateQuery(query, parameters);
+        PagedModel.PageMetadata pageMetadata = queryPaginator.paginateQuery(query, parameters);
         List<Certificate> certificates = query.getResultList();
         return PagedModel.of(certificates, pageMetadata);
     }
@@ -47,7 +51,7 @@ public class CertificateRepositoryImpl implements CertificateRepository {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery(HQL_FIND_BY_ORDER_ID);
         query.setParameter("id", id);
-        PagedModel.PageMetadata pageMetadata = hibernateCertificateQueryBuilder.paginateQuery(query, parameters);
+        PagedModel.PageMetadata pageMetadata = queryPaginator.paginateQuery(query, parameters);
         List<Certificate> certificates = query.getResultList();
         return PagedModel.of(certificates, pageMetadata);
     }
