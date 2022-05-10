@@ -44,4 +44,9 @@ public class TagServiceImpl implements TagService {
     public boolean delete(Long id) {
         return tagRepository.delete(id);
     }
+
+    @Override
+    public List<Tag> findMostPopularTagsOfUsersWhoSpentMost() {
+        return tagRepository.findMostPopularTagsOfUsersWhoSpentMost();
+    }
 }

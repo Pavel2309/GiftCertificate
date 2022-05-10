@@ -25,4 +25,11 @@ public interface TagRepository extends CommonRepository<Tag, Long> {
      * @return a list of tags
      */
     List<Tag> findByCertificateId(Long id);
+
+    /**
+     * Finds the most frequently used tag (tags) of a user (users) who purchased the most certificates (total amount of money spent).
+     *
+     * @return a list of tag objects
+     */
+    List<Tag> findMostPopularTagsOfUsersWhoSpentMost();
 }

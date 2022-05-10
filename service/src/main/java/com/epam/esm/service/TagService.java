@@ -42,4 +42,11 @@ public interface TagService {
      * @return whether a tag was deleted successfully
      */
     boolean delete(Long id);
+
+    /**
+     * Finds the most frequently used tag (tags) of a user (users) who purchased the most certificates (total amount of money spent).
+     *
+     * @return a list of tag objects
+     */
+    List<Tag> findMostPopularTagsOfUsersWhoSpentMost();
 }

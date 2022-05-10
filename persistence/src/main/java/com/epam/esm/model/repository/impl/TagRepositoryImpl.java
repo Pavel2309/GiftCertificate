@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -78,8 +80,24 @@ public class TagRepositoryImpl implements TagRepository {
     @Override
     public List<Tag> findByCertificateId(Long id) {
         Session session = sessionFactory.getCurrentSession();
-        Query query = session.createQuery(HQL_FIND_BY_CERTIFICATE_ID);
+        TypedQuery<Tag> query = session.createSQLQuery(HQL_FIND_BY_CERTIFICATE_ID);
         query.setParameter("id", id);
-        return query.getResultList();
+        List<Tag> tags = query.getResultList();
+        return tags;
+    }
+
+    @Override
+    public List<Tag> findMostPopularTagsOfUsersWhoSpentMost() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createNativeQuery(SQL_SELECT_MOST_POPULAR_TAGS_FROM_USERS_WHO_SPENT_THE_MOST);
+        List<Object[]> rows = query.getResultList();
+        List<Tag> tags = new ArrayList<>(rows.size());
+        for (Object[] row : rows) {
+            Tag tag = new Tag();
+            tag.setId(Long.valueOf(row[0].toString()));
+            tag.setTitle((String) row[1]);
+            tags.add(tag);
+        }
+        return tags;
     }
 }
