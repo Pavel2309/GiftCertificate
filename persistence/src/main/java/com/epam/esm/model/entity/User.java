@@ -9,11 +9,6 @@ import javax.persistence.*;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class User extends CommonEntity<Long> {
     private String name;
 }

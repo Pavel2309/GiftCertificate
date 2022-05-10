@@ -14,11 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor
-public class Order {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Order extends CommonEntity<Long> {
 
     @ManyToOne
     @JoinColumn(name = "users_id")
@@ -34,5 +30,4 @@ public class Order {
 
     @Column(name = "purchase_date")
     private Timestamp purchaseDate;
-
 }

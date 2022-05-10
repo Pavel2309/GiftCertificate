@@ -1,7 +1,9 @@
 package com.epam.esm.model.entity;
 
+import com.epam.esm.model.listener.AuditListener;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.server.core.Relation;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -9,22 +11,16 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-
-@Data
 @Entity
 @Table(name = "certificates")
+@Data
 @NoArgsConstructor
-public class Certificate implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Certificate extends CommonEntity<Long> {
 
     @Size(max = 128, message = "a title can't exceed 128 characters")
     @NotBlank(message = "a title can't be blank")
