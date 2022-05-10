@@ -53,14 +53,13 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public Certificate update(long id, Certificate certificate) throws ServiceException {
-        Certificate certificateForUpdate = findOne(id).orElseThrow(ServiceException::new);
+        Certificate certificateForUpdate = certificateRepository.findOne(id).orElseThrow(ServiceException::new);
         certificateForUpdate.setUpdateDate(LocalDateTime.now());
         Optional.ofNullable(certificate.getTitle()).ifPresent(certificateForUpdate::setTitle);
         Optional.ofNullable(certificate.getDescription()).ifPresent(certificateForUpdate::setDescription);
         Optional.ofNullable(certificate.getPrice()).ifPresent(certificateForUpdate::setPrice);
         Optional.ofNullable(certificate.getDuration()).ifPresent(certificateForUpdate::setDuration);
         if (certificate.getTags() != null) {
-            //certificateRepository.unlinkCertificateWithTags(certificateForUpdate.getId());
             Set<Tag> tags = saveTags(certificate.getTags());
             certificateForUpdate.setTags(tags);
         }
