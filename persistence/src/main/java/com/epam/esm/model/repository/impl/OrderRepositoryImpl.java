@@ -62,11 +62,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    @Transactional
     public Order update(Order order) {
         throw new UnsupportedOperationException("update order functionality is not supported");
     }
 
     @Override
+    @Transactional
     public boolean delete(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery(HQL_DELETE_BY_ID);

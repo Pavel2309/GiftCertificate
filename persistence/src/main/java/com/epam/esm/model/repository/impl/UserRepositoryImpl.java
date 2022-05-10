@@ -14,7 +14,6 @@ import java.util.Optional;
 
 import static com.epam.esm.model.query.UserQueryHolder.HQL_FIND_ALL;
 
-
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 

@@ -4,6 +4,7 @@ import com.epam.esm.model.entity.Tag;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -23,23 +24,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("development")
 @AutoConfigureMockMvc
 @AutoConfigureJson
-public class TagControllerIntegratedTest {
+public class TagControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    private static Tag newTag;
+    private Tag newTag;
 
-    private static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void setUp() {
         newTag = new Tag();
         newTag.setTitle("NewTag");
     }
@@ -75,5 +68,13 @@ public class TagControllerIntegratedTest {
     void deleteTag(Long id) throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/tags/{id}", id))
                 .andExpect(status().isOk());
+    }
+
+    private String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

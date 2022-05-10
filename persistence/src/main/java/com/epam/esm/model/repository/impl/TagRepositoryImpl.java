@@ -8,6 +8,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.*;
@@ -47,11 +48,13 @@ public class TagRepositoryImpl implements TagRepository {
     }
 
     @Override
+    @Transactional
     public Tag update(Tag tag) {
         throw new UnsupportedOperationException("update tag operation is not supported");
     }
 
     @Override
+    @Transactional
     public boolean delete(Long id) {
         Session session = sessionFactory.getCurrentSession();
         Query query = session.createQuery(HQL_DELETE_BY_ID);
@@ -61,11 +64,15 @@ public class TagRepositoryImpl implements TagRepository {
 
     @Override
     public Optional<Tag> findByTitle(String title) {
-        Session session = sessionFactory.getCurrentSession();
-        Query query = session.createQuery(HQL_FIND_BY_TITLE);
-        query.setParameter("title", title);
-        Tag tag = (Tag) query.getSingleResult();
-        return Optional.ofNullable(tag);
+        try {
+            Session session = sessionFactory.getCurrentSession();
+            Query query = session.createQuery(HQL_FIND_BY_TITLE);
+            query.setParameter("title", title);
+            Tag tag = (Tag) query.getSingleResult();
+            return Optional.ofNullable(tag);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
