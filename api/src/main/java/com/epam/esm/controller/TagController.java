@@ -54,7 +54,7 @@ public class TagController {
     @GetMapping("/{id}")
     public EntityModel<Tag> getOne(@PathVariable("id") Long id) {
         Tag tag = tagService.findOne(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
         return assembler.toModel(tag);
     }
 

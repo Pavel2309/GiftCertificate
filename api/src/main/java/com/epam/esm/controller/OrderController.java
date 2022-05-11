@@ -48,7 +48,7 @@ public class OrderController {
     @GetMapping("/{id}")
     public EntityModel<OrderDto> getOne(@PathVariable("id") Long id) {
         OrderDto orderDto = orderService.findOne(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
         return assembler.toModel(orderDto);
     }
 
@@ -78,7 +78,7 @@ public class OrderController {
         try {
             return orderService.create(orderDto);
         } catch (ServiceException e) {
-            throw new ResourceNotFoundException(orderDto.getId());
+            throw new ResourceNotFoundException(orderDto.getId().toString());
         }
     }
 }

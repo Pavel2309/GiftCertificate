@@ -31,6 +31,9 @@ dependencies {
 
     implementation ("javax.validation:validation-api:2.0.1.Final")
     implementation ("org.hibernate:hibernate-validator:6.0.2.Final")
+
+    compileOnly("org.projectlombok:lombok:1.18.22")
+    annotationProcessor("org.projectlombok:lombok:1.18.22")
 }
 
 tasks.test {

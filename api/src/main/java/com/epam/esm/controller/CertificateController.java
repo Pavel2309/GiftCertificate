@@ -37,7 +37,7 @@ public class CertificateController {
     @GetMapping("/{id}")
     public EntityModel<Certificate> getOne(@PathVariable("id") Long id) {
         Certificate certificate = certificateService.findOne(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
         return assembler.toModel(certificate);
     }
 
@@ -91,7 +91,7 @@ public class CertificateController {
         try {
             return certificateService.update(id, certificate);
         } catch (ServiceException e) {
-            throw new ResourceNotFoundException(id);
+            throw new ResourceNotFoundException(id.toString());
         }
     }
 

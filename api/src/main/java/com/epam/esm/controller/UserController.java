@@ -52,7 +52,7 @@ public class UserController {
     @GetMapping("/{id}")
     public EntityModel<User> getOne(@PathVariable("id") Long id) {
         User user = userService.findOne(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
         return assembler.toModel(user);
     }
 }
