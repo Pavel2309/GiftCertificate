@@ -1,4 +1,4 @@
-package com.epam.esm.model.repository;
+package com.epam.esm.model.query;
 
 public class OrderQueryHolder {
 
@@ -63,6 +63,10 @@ public class OrderQueryHolder {
         ON top_users_tags_with_frequency.user_id = top_users_max_tag_count.user_id
         AND top_users_tags_with_frequency.tag_count = top_users_max_tag_count.max_tag_count
             """;
+
+    public static final String HQL_FIND_ALL = "FROM Order o";
+    public static final String HQL_FIND_BY_USER_ID = "FROM Order o WHERE o.user.id = :id";
+    public static final String HQL_DELETE_BY_ID = "DELETE FROM Order o WHERE o.id = :id";
 
     private OrderQueryHolder() {
     }

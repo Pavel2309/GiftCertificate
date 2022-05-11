@@ -6,11 +6,14 @@ import com.epam.esm.model.entity.Tag;
 import com.epam.esm.service.impl.TagServiceImpl;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -33,14 +36,13 @@ public class TagController {
     /**
      * Gets all tags.
      *
+     * @param parameters a page and size parameters for pagination
      * @return a list of tag objects
      */
     @GetMapping
-    public CollectionModel<EntityModel<Tag>> getAll() {
-        List<EntityModel<Tag>> tags = tagService.findAll().stream()
-                .map(assembler::toModel)
-                .toList();
-        return CollectionModel.of(tags, linkTo(methodOn(TagController.class).getAll()).withSelfRel());
+    public PagedModel<EntityModel<Tag>> getAll(@RequestParam Map<String, String> parameters) {
+        PagedModel<Tag> certificates = tagService.findAll(parameters);
+        return assembler.toPageModel(certificates, parameters);
     }
 
     /**
@@ -52,8 +54,22 @@ public class TagController {
     @GetMapping("/{id}")
     public EntityModel<Tag> getOne(@PathVariable("id") Long id) {
         Tag tag = tagService.findOne(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
         return assembler.toModel(tag);
+    }
+
+    /**
+     * Gets the most frequently used tag (tags) of a user (users) who purchased the most certificates (total amount of money spent).
+     *
+     * @return a list of tag objects
+     */
+    @GetMapping("/popular")
+    public CollectionModel<EntityModel<Tag>> getPopularTagsOfUsersWhoSpentMost() {
+        List<EntityModel<Tag>> tags = tagService.findMostPopularTagsOfUsersWhoSpentMost().stream()
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+        return CollectionModel.of(tags,
+                linkTo(methodOn(TagController.class).getPopularTagsOfUsersWhoSpentMost()).withSelfRel());
     }
 
     /**

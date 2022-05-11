@@ -6,34 +6,37 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.hateoas.PagedModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 
+@ExtendWith(MockitoExtension.class)
 class TagServiceImplTest {
 
     @Mock
     private static TagRepository tagRepository;
 
-    @Autowired
     @InjectMocks
     private TagServiceImpl service;
 
     private Tag tagOne;
     private Tag tagTwo;
     private List<Tag> tagList;
+    private PagedModel<Tag> pagedModel;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         tagOne = new Tag();
         tagTwo = new Tag();
         tagOne.setId(1L);
@@ -41,6 +44,9 @@ class TagServiceImplTest {
         tagList = new ArrayList<>();
         tagList.add(tagOne);
         tagList.add(tagTwo);
+
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(10, 1, 2, 1);
+        pagedModel = PagedModel.of(tagList, metadata);
     }
 
     @AfterEach
@@ -52,8 +58,8 @@ class TagServiceImplTest {
 
     @Test
     void findAll() {
-        Mockito.when(tagRepository.findAll()).thenReturn(tagList);
-        List<Tag> foundTags = service.findAll();
+        Mockito.when(tagRepository.findAll(anyMap())).thenReturn(pagedModel);
+        List<Tag> foundTags = service.findAll(new HashMap<>()).getContent().stream().toList();
         Assertions.assertEquals(tagList, foundTags);
     }
 

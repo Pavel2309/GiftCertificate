@@ -1,8 +1,10 @@
 package com.epam.esm.service;
 
 import com.epam.esm.model.entity.Tag;
+import org.springframework.hateoas.PagedModel;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -12,9 +14,10 @@ public interface TagService {
     /**
      * Finds all tags.
      *
-     * @return a list of tag objects
+     * @param pageParameters the page number and size parameters
+     * @return a page model object of tag
      */
-    List<Tag> findAll();
+    PagedModel<Tag> findAll(Map<String, String> pageParameters);
 
     /**
      * Finds one tag with the specified id.
@@ -39,4 +42,11 @@ public interface TagService {
      * @return whether a tag was deleted successfully
      */
     boolean delete(Long id);
+
+    /**
+     * Finds the most frequently used tag (tags) of a user (users) who purchased the most certificates (total amount of money spent).
+     *
+     * @return a list of tag objects
+     */
+    List<Tag> findMostPopularTagsOfUsersWhoSpentMost();
 }

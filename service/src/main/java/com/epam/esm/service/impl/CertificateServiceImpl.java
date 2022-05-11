@@ -7,6 +7,7 @@ import com.epam.esm.model.repository.CertificateRepository;
 import com.epam.esm.model.repository.TagRepository;
 import com.epam.esm.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -25,61 +26,42 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     @Override
-    public List<Certificate> findAll() {
-        List<Certificate> certificates = certificateRepository.findAll();
-        certificates.forEach(certificate ->
-                certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
-        return certificates;
-    }
-
-    @Override
     public Optional<Certificate> findOne(Long id) {
-        Optional<Certificate> certificate = certificateRepository.findOne(id);
-        if (certificate.isPresent()) {
-            certificate.get().setTags(tagRepository.findByCertificateId(certificate.get().getId()));
-            return certificate;
-        } else {
-            return Optional.empty();
-        }
+        return certificateRepository.findOne(id);
     }
 
     @Override
-    public List<Certificate> findWithParameters(Map<String, String> parameters) {
-//        if (parameters.isEmpty()) {
-//            return findAll();
-//        }
-        List<Certificate> certificates = certificateRepository.findAllWithParameters(parameters);
-        certificates.forEach(certificate ->
-                certificate.setTags(tagRepository.findByCertificateId(certificate.getId())));
-        return certificates;
+    public PagedModel<Certificate> findByOrderId(Long id, Map<String, String> parameters) {
+        return certificateRepository.findByOrderId(id, parameters);
+    }
+
+    @Override
+    public PagedModel<Certificate> findWithParameters(Map<String, String> parameters) {
+        return certificateRepository.findAllWithParameters(parameters);
     }
 
     @Override
     public Certificate create(Certificate certificate) {
-        certificate.setCreateTime(LocalDateTime.now());
-        certificate.setUpdateTime(LocalDateTime.now());
-        Certificate createdCertificate = certificateRepository.create(certificate);
+        certificate.setCreateDate(LocalDateTime.now());
+        certificate.setUpdateDate(LocalDateTime.now());
         if (certificate.getTags() != null) {
             Set<Tag> tags = saveTags(certificate.getTags());
-            createdCertificate.setTags(tags);
-            certificateRepository.linkCertificateWithTags(createdCertificate);
+            certificate.setTags(tags);
         }
-        return createdCertificate;
+        return certificateRepository.create(certificate);
     }
 
     @Override
     public Certificate update(long id, Certificate certificate) throws ServiceException {
-        Certificate certificateForUpdate = findOne(id).orElseThrow(ServiceException::new);
-        certificateForUpdate.setUpdateTime(LocalDateTime.now());
+        Certificate certificateForUpdate = certificateRepository.findOne(id).orElseThrow(ServiceException::new);
+        certificateForUpdate.setUpdateDate(LocalDateTime.now());
         Optional.ofNullable(certificate.getTitle()).ifPresent(certificateForUpdate::setTitle);
         Optional.ofNullable(certificate.getDescription()).ifPresent(certificateForUpdate::setDescription);
         Optional.ofNullable(certificate.getPrice()).ifPresent(certificateForUpdate::setPrice);
         Optional.ofNullable(certificate.getDuration()).ifPresent(certificateForUpdate::setDuration);
         if (certificate.getTags() != null) {
-            certificateRepository.unlinkCertificateWithTags(certificateForUpdate.getId());
             Set<Tag> tags = saveTags(certificate.getTags());
             certificateForUpdate.setTags(tags);
-            certificateRepository.linkCertificateWithTags(certificateForUpdate);
         }
         certificateRepository.update(certificateForUpdate);
         return certificateForUpdate;
@@ -87,7 +69,6 @@ public class CertificateServiceImpl implements CertificateService {
 
     @Override
     public boolean delete(Long id) {
-        certificateRepository.unlinkCertificateWithTags(id);
         return certificateRepository.delete(id);
     }
 

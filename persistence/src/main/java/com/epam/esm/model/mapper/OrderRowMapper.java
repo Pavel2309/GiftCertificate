@@ -13,12 +13,10 @@ import java.sql.SQLException;
 public class OrderRowMapper implements RowMapper<Order> {
 
     private final UserRowMapper userRowMapper;
-    private final CertificateRowMapper certificateRowMapper;
 
     @Autowired
-    public OrderRowMapper(UserRowMapper userRowMapper, CertificateRowMapper certificateRowMapper) {
+    public OrderRowMapper(UserRowMapper userRowMapper) {
         this.userRowMapper = userRowMapper;
-        this.certificateRowMapper = certificateRowMapper;
     }
 
     @Override

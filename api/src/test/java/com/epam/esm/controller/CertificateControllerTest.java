@@ -6,6 +6,7 @@ import com.epam.esm.model.entity.Tag;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -19,7 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;;
+import org.springframework.util.MultiValueMap;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -34,56 +35,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("development")
 @AutoConfigureMockMvc
 @AutoConfigureJson
-public class CertificateControllerIntegratedTest {
+public class CertificateControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    private static Certificate newCertificate;
-    private static Certificate certificateForUpdate;
-    private static Set<Tag> tagList;
-
-    private static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @BeforeAll
-    static void setUp() {
-        Tag tagOne = new Tag();
-        Tag tagTwo = new Tag();
-        tagOne.setTitle("TagOne");
-        tagTwo.setTitle("TagTwo");
-        tagList = new HashSet<>();
-        tagList.add(tagOne);
-        tagList.add(tagTwo);
-
-        newCertificate = new Certificate();
-        newCertificate.setTitle("Title");
-        newCertificate.setDescription("Description");
-        newCertificate.setPrice(BigDecimal.TEN);
-        newCertificate.setDuration(11);
-        newCertificate.setTags(tagList);
-
-        certificateForUpdate = new Certificate();
-        certificateForUpdate.setTitle("Updated title");
-
-    }
-
     @Test
     void getWithParameters() throws Exception {
-        MultiValueMap<String, String> parameters1 = new LinkedMultiValueMap<>();
-        parameters1.put("tag_title", Collections.singletonList("tag_1"));
-        parameters1.put("search_query", Collections.singletonList("Title_1"));
-        parameters1.put("sort", Collections.singletonList("title(asc)"));
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.put("tag_title", Collections.singletonList("tag_1"));
+        parameters.put("search_query", Collections.singletonList("Title_1"));
+        parameters.put("sort", Collections.singletonList("title(asc)"));
         mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/certificates/")
-                        .params(parameters1))
+                        .params(parameters))
                 .andExpect(handler().methodName("getWithParameters"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*].title", containsInRelativeOrder("Title_1")));
+                .andExpect(jsonPath("$._embedded.certificateList[*].title", containsInRelativeOrder("Title_1")));
     }
 
     @ParameterizedTest
@@ -104,6 +71,22 @@ public class CertificateControllerIntegratedTest {
 
     @Test
     void addCertificate() throws Exception {
+
+        Tag tagOne = new Tag();
+        Tag tagTwo = new Tag();
+        tagOne.setTitle("TagOne");
+        tagTwo.setTitle("TagTwo");
+        Set<Tag> tagList = new HashSet<>();
+        tagList.add(tagOne);
+        tagList.add(tagTwo);
+
+        Certificate newCertificate = new Certificate();
+        newCertificate.setTitle("Title");
+        newCertificate.setDescription("Description");
+        newCertificate.setPrice(BigDecimal.TEN);
+        newCertificate.setDuration(11);
+        newCertificate.setTags(tagList);
+
         mockMvc.perform(MockMvcRequestBuilders.post("/api/v1/certificates/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(newCertificate)))
@@ -114,6 +97,10 @@ public class CertificateControllerIntegratedTest {
     @ParameterizedTest
     @ValueSource(longs = 4L)
     void updateCertificate(Long id) throws Exception {
+
+        Certificate certificateForUpdate = new Certificate();
+        certificateForUpdate.setTitle("Updated title");
+
         mockMvc.perform(MockMvcRequestBuilders.patch("/api/v1/certificates/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(certificateForUpdate)))
@@ -127,5 +114,13 @@ public class CertificateControllerIntegratedTest {
     void deleteCertificate(Long id) throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/v1/certificates/{id}", id))
                 .andExpect(status().isOk());
+    }
+
+    private String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

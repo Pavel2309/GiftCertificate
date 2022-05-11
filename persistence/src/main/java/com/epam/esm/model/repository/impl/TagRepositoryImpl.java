@@ -1,78 +1,104 @@
 package com.epam.esm.model.repository.impl;
 
 import com.epam.esm.model.entity.Tag;
-import com.epam.esm.model.mapper.TagRowMapper;
+import com.epam.esm.model.query.QueryPaginator;
 import com.epam.esm.model.repository.TagRepository;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.util.*;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static com.epam.esm.model.repository.TagQueryHolder.*;
+import static com.epam.esm.model.query.TagQueryHolder.*;
 
 @Repository
 public class TagRepositoryImpl implements TagRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final TagRowMapper tagRowMapper;
+    private final SessionFactory sessionFactory;
+    private final QueryPaginator queryPaginator;
 
-    public TagRepositoryImpl(JdbcTemplate jdbcTemplate, TagRowMapper tagRowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.tagRowMapper = tagRowMapper;
+    public TagRepositoryImpl(SessionFactory sessionFactory, QueryPaginator queryPaginator) {
+        this.sessionFactory = sessionFactory;
+        this.queryPaginator = queryPaginator;
     }
 
     @Override
-    public List<Tag> findAll() {
-        return jdbcTemplate.query(SQL_FIND_ALL_TAGS, tagRowMapper);
+    public PagedModel<Tag> findAll(Map<String, String> parameters) {
+        Query query = sessionFactory.getCurrentSession().createQuery(HQL_FIND_ALL);
+        PagedModel.PageMetadata metadata = queryPaginator.paginateQuery(query, parameters);
+        List<Tag> tags = query.getResultList();
+        return PagedModel.of(tags, metadata);
     }
 
     @Override
     public Optional<Tag> findOne(Long id) {
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_FIND_TAG_BY_ID, tagRowMapper, id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        Tag tag = sessionFactory.getCurrentSession().get(Tag.class, id);
+        return Optional.ofNullable(tag);
     }
 
     @Override
+    @Transactional
     public Tag create(Tag tag) {
-        KeyHolder key = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement statement = con.prepareStatement(SQL_CREATE_TAG, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, tag.getTitle());
-            return statement;
-        }, key);
-        tag.setId(Objects.requireNonNull(key.getKey()).longValue());
+        sessionFactory.getCurrentSession().save(tag);
         return tag;
     }
 
     @Override
+    @Transactional
     public Tag update(Tag tag) {
         throw new UnsupportedOperationException("update tag operation is not supported");
     }
 
     @Override
+    @Transactional
     public boolean delete(Long id) {
-        return jdbcTemplate.update(SQL_DELETE_TAG, id) == 1;
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(HQL_DELETE_BY_ID);
+        query.setParameter("id", id);
+        return query.executeUpdate() >= 1;
     }
 
     @Override
     public Optional<Tag> findByTitle(String title) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_FIND_TAG_BY_TITLE, tagRowMapper, title));
-        } catch (EmptyResultDataAccessException e) {
+            Session session = sessionFactory.getCurrentSession();
+            Query query = session.createQuery(HQL_FIND_BY_TITLE);
+            query.setParameter("title", title);
+            Tag tag = (Tag) query.getSingleResult();
+            return Optional.ofNullable(tag);
+        } catch (NoResultException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Set<Tag> findByCertificateId(Long id) {
-        return new HashSet<>(jdbcTemplate.query(SQL_FIND_TAGS_BY_CERTIFICATE_ID, tagRowMapper, id));
+    public List<Tag> findByCertificateId(Long id) {
+        Session session = sessionFactory.getCurrentSession();
+        TypedQuery<Tag> query = session.createSQLQuery(HQL_FIND_BY_CERTIFICATE_ID);
+        query.setParameter("id", id);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<Tag> findMostPopularTagsOfUsersWhoSpentMost() {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createNativeQuery(SQL_SELECT_MOST_POPULAR_TAGS_FROM_USERS_WHO_SPENT_THE_MOST);
+        List<Object[]> rows = query.getResultList();
+        List<Tag> tags = new ArrayList<>(rows.size());
+        for (Object[] row : rows) {
+            Tag tag = new Tag();
+            tag.setId(Long.valueOf(row[0].toString()));
+            tag.setTitle((String) row[1]);
+            tags.add(tag);
+        }
+        return tags;
     }
 }

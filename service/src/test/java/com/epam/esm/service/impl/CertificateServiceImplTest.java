@@ -3,7 +3,6 @@ package com.epam.esm.service.impl;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.model.repository.CertificateRepository;
-import com.epam.esm.model.repository.TagRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.PagedModel;
 
 import java.util.*;
 
@@ -24,9 +24,6 @@ class CertificateServiceImplTest {
     @Mock
     private static CertificateRepository certificateRepository;
 
-    @Mock
-    private static TagRepository tagRepository;
-
     @Autowired
     @InjectMocks
     private CertificateServiceImpl service;
@@ -34,6 +31,7 @@ class CertificateServiceImplTest {
     private Certificate certificateOne;
     private Certificate certificateTwo;
     private List<Certificate> certificateList;
+    private PagedModel<Certificate> pagedModel;
 
     @BeforeEach
     void setUp() {
@@ -45,6 +43,8 @@ class CertificateServiceImplTest {
         certificateList = new ArrayList<>();
         certificateList.add(certificateOne);
         certificateList.add(certificateTwo);
+        PagedModel.PageMetadata metadata = new PagedModel.PageMetadata(10, 1, 2, 1);
+        pagedModel = PagedModel.of(certificateList, metadata);
     }
 
     @AfterEach
@@ -52,13 +52,7 @@ class CertificateServiceImplTest {
         certificateOne = null;
         certificateTwo = null;
         certificateList = null;
-    }
-
-    @Test
-    void findAll() {
-        Mockito.when(certificateRepository.findAll()).thenReturn(certificateList);
-        List<Certificate> certificates = service.findAll();
-        Assertions.assertEquals(certificates, certificateList);
+        pagedModel = null;
     }
 
     @Test
@@ -74,8 +68,8 @@ class CertificateServiceImplTest {
         parameters.put("tag_title", "titleOne");
         parameters.put("search_query", "query");
         parameters.put("sort", "title(asc)");
-        Mockito.when(certificateRepository.findAllWithParameters(anyMap())).thenReturn(certificateList);
-        List<Certificate> certificates = service.findWithParameters(parameters);
+        Mockito.when(certificateRepository.findAllWithParameters(anyMap())).thenReturn(pagedModel);
+        List<Certificate> certificates = service.findWithParameters(parameters).getContent().stream().toList();
         Assertions.assertEquals(certificateList, certificates);
     }
 
@@ -89,7 +83,7 @@ class CertificateServiceImplTest {
     @Test
     void update() throws ServiceException {
         Mockito.when(certificateRepository.update(any())).thenReturn(certificateOne);
-        Mockito.when(service.findOne(any())).thenReturn(Optional.of(certificateOne));
+        Mockito.when(certificateRepository.findOne(any())).thenReturn(Optional.of(certificateOne));
         Certificate updatedCertificate = service.update(1L, certificateOne);
         Assertions.assertEquals(certificateOne, updatedCertificate);
     }

@@ -4,9 +4,11 @@ import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.repository.TagRepository;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -20,8 +22,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> findAll() {
-        return tagRepository.findAll();
+    public PagedModel<Tag> findAll(Map<String, String> parameters) {
+        return tagRepository.findAll(parameters);
     }
 
     @Override
@@ -41,5 +43,10 @@ public class TagServiceImpl implements TagService {
     @Override
     public boolean delete(Long id) {
         return tagRepository.delete(id);
+    }
+
+    @Override
+    public List<Tag> findMostPopularTagsOfUsersWhoSpentMost() {
+        return tagRepository.findMostPopularTagsOfUsersWhoSpentMost();
     }
 }

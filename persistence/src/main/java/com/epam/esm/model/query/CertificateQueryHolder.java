@@ -1,4 +1,4 @@
-package com.epam.esm.model.repository;
+package com.epam.esm.model.query;
 
 public final class CertificateQueryHolder {
 
@@ -53,6 +53,9 @@ public final class CertificateQueryHolder {
             INNER JOIN orders_has_certificates ohc on certificates.id = ohc.certificates_id
             WHERE ohc.orders_id = ?
             """;
+
+    public static final String HQL_FIND_BY_ORDER_ID = "SELECT o.certificates FROM Order o WHERE o.user.id = :id";
+    public static final String HQL_DELETE_BY_ID = "DELETE FROM Certificate c WHERE c.id = :id";
 
     private CertificateQueryHolder() {
     }

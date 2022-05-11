@@ -1,123 +1,87 @@
 package com.epam.esm.model.repository.impl;
 
 import com.epam.esm.model.entity.Certificate;
-import com.epam.esm.model.mapper.CertificateRowMapper;
-import com.epam.esm.model.query.impl.CertificateQueryBuilder;
+import com.epam.esm.model.query.QueryPaginator;
+import com.epam.esm.model.query.impl.HibernateCertificateQueryBuilder;
 import com.epam.esm.model.repository.CertificateRepository;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
-import static com.epam.esm.model.repository.CertificateQueryHolder.*;
+import static com.epam.esm.model.query.CertificateQueryHolder.*;
 
 @Repository
 public class CertificateRepositoryImpl implements CertificateRepository {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final CertificateRowMapper certificateRowMapper;
-    private final CertificateQueryBuilder queryBuilder;
+    private final SessionFactory sessionFactory;
+    private final HibernateCertificateQueryBuilder hibernateCertificateQueryBuilder;
+    private final QueryPaginator queryPaginator;
 
-    public CertificateRepositoryImpl(JdbcTemplate jdbcTemplate,
-                                     CertificateRowMapper certificateRowMapper,
-                                     CertificateQueryBuilder queryBuilder) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.certificateRowMapper = certificateRowMapper;
-        this.queryBuilder = queryBuilder;
+    public CertificateRepositoryImpl(SessionFactory sessionFactory,
+                                     HibernateCertificateQueryBuilder hibernateCertificateQueryBuilder,
+                                     QueryPaginator queryPaginator) {
+        this.sessionFactory = sessionFactory;
+        this.hibernateCertificateQueryBuilder = hibernateCertificateQueryBuilder;
+        this.queryPaginator = queryPaginator;
     }
 
     @Override
-    public List<Certificate> findAll() {
-        return jdbcTemplate.query(SQL_FIND_ALL_CERTIFICATES, certificateRowMapper);
+    public PagedModel<Certificate> findAll(Map<String, String> parameters) {
+        throw new UnsupportedOperationException("find all is not supported");
     }
 
     @Override
-    public List<Certificate> findAllWithParameters(Map<String, String> parameters) {
-        String query = queryBuilder.buildQuery(SQL_FIND_ALL_CERTIFICATES_WITH_TAGS, parameters);
-        List<String> arguments = queryBuilder.extractQueryArguments(parameters);
-        return jdbcTemplate.query(query, certificateRowMapper, arguments.toArray());
+    public PagedModel<Certificate> findAllWithParameters(Map<String, String> parameters) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = hibernateCertificateQueryBuilder.buildQuery(session, parameters);
+        PagedModel.PageMetadata pageMetadata = queryPaginator.paginateQuery(query, parameters);
+        List<Certificate> certificates = query.getResultList();
+        return PagedModel.of(certificates, pageMetadata);
     }
 
     @Override
-    public List<Certificate> findByOrderId(Long id) {
-        return jdbcTemplate.query(SQL_FIND_CERTIFICATES_BY_ORDER_ID, certificateRowMapper, id);
+    public PagedModel<Certificate> findByOrderId(Long id, Map<String, String> parameters) {
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(HQL_FIND_BY_ORDER_ID);
+        query.setParameter("id", id);
+        PagedModel.PageMetadata pageMetadata = queryPaginator.paginateQuery(query, parameters);
+        List<Certificate> certificates = query.getResultList();
+        return PagedModel.of(certificates, pageMetadata);
     }
 
     @Override
     public Optional<Certificate> findOne(Long id) {
-        try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(SQL_FIND_CERTIFICATE_BY_ID, certificateRowMapper, id));
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
+        Certificate certificate = sessionFactory.getCurrentSession().get(Certificate.class, id);
+        return Optional.ofNullable(certificate);
     }
 
     @Override
+    @Transactional
     public Certificate create(Certificate certificate) {
-        KeyHolder key = new GeneratedKeyHolder();
-        jdbcTemplate.update(con -> {
-            PreparedStatement statement = con.prepareStatement(SQL_CREATE_CERTIFICATE, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, certificate.getTitle());
-            statement.setString(2, certificate.getDescription());
-            statement.setBigDecimal(3, certificate.getPrice());
-            statement.setInt(4, certificate.getDuration());
-            statement.setObject(5, certificate.getCreateTime());
-            statement.setObject(6, certificate.getUpdateTime());
-            return statement;
-        }, key);
-        certificate.setId(Objects.requireNonNull(key.getKey()).longValue());
+        sessionFactory.getCurrentSession().save(certificate);
         return certificate;
     }
 
     @Override
+    @Transactional
     public Certificate update(Certificate certificate) {
-        jdbcTemplate.update(SQL_UPDATE_CERTIFICATE,
-                certificate.getTitle(),
-                certificate.getDescription(),
-                certificate.getPrice(),
-                certificate.getDuration(),
-                certificate.getCreateTime(),
-                certificate.getUpdateTime(),
-                certificate.getId());
+        sessionFactory.getCurrentSession().update(certificate);
         return certificate;
     }
 
     @Override
+    @Transactional
     public boolean delete(Long id) {
-        return jdbcTemplate.update(SQL_DELETE_CERTIFICATE, id) == 1;
-    }
-
-    @Override
-    public boolean linkCertificateWithTags(Certificate certificate) {
-        boolean result = false;
-        if (certificate.getTags() != null) {
-            certificate.getTags().forEach(tag -> {
-                jdbcTemplate.update(con -> {
-                    PreparedStatement statement = con.prepareStatement(SQL_LINK_CERTIFICATE_WITH_TAG, Statement.RETURN_GENERATED_KEYS);
-                    statement.setLong(1, certificate.getId());
-                    statement.setLong(2, tag.getId());
-                    return statement;
-                });
-            });
-            result = true;
-        }
-        return result;
-    }
-
-    @Override
-    public boolean unlinkCertificateWithTags(Long id) {
-        return jdbcTemplate.update(con -> {
-            PreparedStatement statement = con.prepareStatement(SQL_UNLINK_CERTIFICATE_WITH_TAG);
-            statement.setLong(1, id);
-            return statement;
-        }) >= 1;
+        Session session = sessionFactory.getCurrentSession();
+        Query query = session.createQuery(HQL_DELETE_BY_ID);
+        query.setParameter("id", id);
+        return query.executeUpdate() >= 1;
     }
 }

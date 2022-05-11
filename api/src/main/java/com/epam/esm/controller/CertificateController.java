@@ -5,18 +5,13 @@ import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.entity.Certificate;
 import com.epam.esm.service.impl.CertificateServiceImpl;
-import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 /**
  * The REST API Certificate controller.
@@ -37,27 +32,38 @@ public class CertificateController {
      * Gets one certificate with the specified id.
      *
      * @param id a certificate's id
-     * @return a certificate object
+     * @return an entity model object of a certificate
      */
     @GetMapping("/{id}")
     public EntityModel<Certificate> getOne(@PathVariable("id") Long id) {
         Certificate certificate = certificateService.findOne(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException(id.toString()));
         return assembler.toModel(certificate);
+    }
+
+    /**
+     * Gets a list of certificates with the specified order id.
+     *
+     * @param id an order's id
+     * @param parameters a page and size parameters
+     * @return a paged model object certificates
+     */
+    @GetMapping("/orders/{id}")
+    public PagedModel<EntityModel<Certificate>> getByOrderId(@PathVariable("id") Long id, @RequestParam Map<String, String> parameters) {
+        PagedModel<Certificate> certificates = certificateService.findByOrderId(id, parameters);
+        return assembler.toCollectionModel(certificates, parameters);
     }
 
     /**
      * Gets a list of certificate with the specified parameters.
      *
-     * @param parameters a map of request parameters including a tag title, search query and sort
-     * @return a list of certificates
+     * @param parameters a map of request parameters including a tag title, search query, sort, page and size
+     * @return a paged model object certificates
      */
     @GetMapping
-    public CollectionModel<EntityModel<Certificate>> getWithParameters(@RequestParam Map<String, String> parameters) {
-        List<EntityModel<Certificate>> certificates = certificateService.findWithParameters(parameters).stream()
-                .map(assembler::toModel)
-                .toList();
-        return CollectionModel.of(certificates, linkTo(methodOn(CertificateController.class).getWithParameters(parameters)).withSelfRel());
+    public PagedModel<EntityModel<Certificate>> getWithParameters(@RequestParam Map<String, String> parameters) {
+        PagedModel<Certificate> certificates = certificateService.findWithParameters(parameters);
+        return assembler.toCollectionModel(certificates, parameters);
     }
 
     /**
@@ -85,7 +91,7 @@ public class CertificateController {
         try {
             return certificateService.update(id, certificate);
         } catch (ServiceException e) {
-            throw new ResourceNotFoundException(id);
+            throw new ResourceNotFoundException(id.toString());
         }
     }
 
