@@ -1,13 +1,13 @@
 ### The multi-modal project represents a web service for Gift Certificates system.
 
-### The project is going to be separated into several parts where each part will add functionality.
+### The project is going to be separated into several sections where each section adds a specific functionality to the project.
 
-## Part 1 (done)
-
-#### Stack
+### Stack
 Java EE, Spring Framework, Spring IoC, Gradle, Apache Tomcat, MySQL, JUnit5, Mockito
 
-#### Business requirements
+## Section 1: REST API Basics (Done)
+
+### Requirements
 The system should expose REST APIs to perform the following operations:
 1. CRUD operations for gift certificates.
 2. CRD operations for Tags.
@@ -18,11 +18,14 @@ The system should expose REST APIs to perform the following operations:
 
 ------
 
-## Part 2
+## Section 2: REST API Advanced (Done)
 
-The application from the Part 1 is migrated to the Spring Boot application.
+### Requirements
 
-#### Business requirements
+#### Part 1:
+The application from the Section 1 should be migrated to the Spring Boot application.
+
+#### Part 2:
 The system should be extended and expose the following REST APis:
 1. Change a single field of a certificate.
 2. Add an entity of a User (implement only get operations).
@@ -33,3 +36,22 @@ The system should be extended and expose the following REST APis:
 7. Search certificates by multiple tags ("and" condition).
 8. Implement pagination for all GET endpoints.
 9. Support HATEOAS on REST endpoints.
+
+#### Part 3:
+1. Hibernate should be used as a JPA implementation for data access.
+2. Spring Transaction should be used in all necessary areas of the application.
+3. Audit data should be populated using JPA features.
+
+
+------
+## Section 3: Authentication & Spring Security
+
+### Requirements
+
+1. Spring Security should be used as a security framework.
+2. Application should support only stateless user authentication and verify integrity of JWT token.
+3. Users should be stored in a database with some basic information and a password.
+4. Use Oauth2 as an authorization protocol.
+   1. OAuth2 scopes should be used to restrict data.
+   2. Implicit grant and Resource owner credentials grant should be implemented.
+5. Repository should be migrated to Spring Data.
