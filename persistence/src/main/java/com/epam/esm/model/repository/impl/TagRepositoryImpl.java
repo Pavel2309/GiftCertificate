@@ -10,10 +10,12 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static com.epam.esm.model.query.TagQueryHolder.*;
 
@@ -82,8 +84,7 @@ public class TagRepositoryImpl implements TagRepository {
         Session session = sessionFactory.getCurrentSession();
         TypedQuery<Tag> query = session.createSQLQuery(HQL_FIND_BY_CERTIFICATE_ID);
         query.setParameter("id", id);
-        List<Tag> tags = query.getResultList();
-        return tags;
+        return query.getResultList();
     }
 
     @Override

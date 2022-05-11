@@ -8,14 +8,18 @@ create table certificates
     duration    int          not null,
     create_date datetime     not null,
     update_date datetime     not null,
+    operation   varchar(255) not null,
+    timestamp   bigint       not null,
         unique (id)
 );
 
 create table tags
 (
-    id    int auto_increment
+    id        int auto_increment
         primary key,
-    title varchar(45) not null
+    title     varchar(45)  not null,
+    operation varchar(255) not null,
+    timestamp bigint       not null
 );
 
 create table certificates_has_tags
@@ -37,11 +41,13 @@ create index fk_certificates_has_tags_tags1_idx
 
 create table users
 (
-    id       int auto_increment
+    id        int auto_increment
         primary key,
-    name     varchar(45)  not null,
-    email    varchar(128) not null,
-    password varchar(256) not null,
+    name      varchar(45)  not null,
+    email     varchar(128) not null,
+    password  varchar(256) not null,
+    operation varchar(255) not null,
+    timestamp bigint       not null,
         unique (id)
 );
 
@@ -52,6 +58,8 @@ create table orders
     users_id      int          not null,
     price         decimal      not null,
     purchase_date timestamp(3) not null,
+    operation     varchar(255) not null,
+    timestamp     bigint       not null,
         unique (id),
     constraint fk_orders_users1
         foreign key (users_id) references users (id)
@@ -76,4 +84,6 @@ create index fk_orders_has_certificates_certificates1_idx
 
 create index fk_orders_has_certificates_orders1_idx
     on orders_has_certificates (orders_id);
+
+
 
