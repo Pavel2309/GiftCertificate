@@ -28,6 +28,8 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-security:2.6.7")
     implementation("io.jsonwebtoken:jjwt:0.9.1")
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client:2.6.7")
+
 
     compileOnly("org.projectlombok:lombok:1.18.22")
     annotationProcessor("org.projectlombok:lombok:1.18.22")

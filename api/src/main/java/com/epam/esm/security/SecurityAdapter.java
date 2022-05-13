@@ -28,6 +28,7 @@ public class SecurityAdapter extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -58,6 +59,11 @@ public class SecurityAdapter extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint((req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "UNAUTHORIZED : " + ex.getMessage()))
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .oauth2Login()
+                .successHandler(new CustomAuthenticationSuccessHandler())
+                .and()
+                .oauth2Client()
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
