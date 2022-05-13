@@ -1,4 +1,4 @@
-package com.epam.esm.model.security.jwt;
+package com.epam.esm.security.jwt;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,10 +19,14 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private final JwtProvider tokenProvider;
+    private final UserDetailsService userDetailsService;
+
     @Autowired
-    private JwtProvider tokenProvider;
-    @Autowired
-    private UserDetailsService userDetailsService;
+    public JwtAuthenticationFilter(JwtProvider tokenProvider, UserDetailsService userDetailsService) {
+        this.tokenProvider = tokenProvider;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)

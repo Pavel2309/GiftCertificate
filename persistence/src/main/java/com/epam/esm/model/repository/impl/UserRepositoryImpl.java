@@ -59,7 +59,8 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-        throw new UnsupportedOperationException("create user functionality is not supported");
+        sessionFactory.getCurrentSession().save(user);
+        return user;
     }
 
     @Override

@@ -16,5 +16,4 @@ public interface UserRepository extends CommonRepository<User, Long> {
      * @return an object of a user
      */
     Optional<User> findByEmail(String email);
-
 }

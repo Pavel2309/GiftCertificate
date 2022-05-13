@@ -1,6 +1,6 @@
 package com.epam.esm.converter.impl;
 
-import com.epam.esm.converter.ObjectConverter;
+import com.epam.esm.converter.ObjectMapper;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.OrderDto;
 import com.epam.esm.model.entity.Certificate;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class OrderConverter implements ObjectConverter<Order, OrderDto> {
+public class OrderConverter implements ObjectMapper<Order, OrderDto> {
 
     private final UserRepository userRepository;
     private final CertificateRepository certificateRepository;

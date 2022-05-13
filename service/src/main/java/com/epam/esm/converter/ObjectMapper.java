@@ -2,7 +2,7 @@ package com.epam.esm.converter;
 
 import com.epam.esm.exception.ServiceException;
 
-public interface ObjectConverter<E, D> {
+public interface ObjectMapper<E, D> {
 
     D convertEntityToDto(E entity);
 

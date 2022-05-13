@@ -1,4 +1,4 @@
-package com.epam.esm.model.security;
+package com.epam.esm.model.entity;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

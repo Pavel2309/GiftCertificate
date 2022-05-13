@@ -1,6 +1,6 @@
-package com.epam.esm.model.security.jwt;
+package com.epam.esm.security.jwt;
 
-import com.epam.esm.model.security.UserPrincipal;
+import com.epam.esm.model.entity.UserPrincipal;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -11,20 +11,20 @@ import java.util.Date;
 @Component
 public class JwtProvider {
 
-//    @Value("${app.jwtSecret}")
-    private final String jwtSecret = "fjskldfj3423";
-//    @Value("${app.jwtExpirationInMs}")
-    private final int jwtExpirationInMs = 99999999;
+    @Value("${app.jwtSecret}")
+    private String jwtSecret;
+    @Value("${app.jwtExpirationInMs}")
+    private int jwtExpirationInMs;
 
     public String generateToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+        Date expirationDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
                 .setIssuedAt(new Date())
-                .setExpiration(expiryDate)
+                .setExpiration(expirationDate)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
                 .compact();
     }
@@ -49,5 +49,4 @@ public class JwtProvider {
         }
         return false;
     }
-
 }

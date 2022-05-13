@@ -1,5 +1,7 @@
 package com.epam.esm.service;
 
+import com.epam.esm.exception.ServiceException;
+import com.epam.esm.model.dto.UserDto;
 import com.epam.esm.model.entity.Tag;
 import com.epam.esm.model.entity.User;
 import org.springframework.hateoas.PagedModel;
@@ -27,4 +29,12 @@ public interface UserService {
      * @return an optional object of a user
      */
     Optional<User> findOne(Long id);
+
+    /**
+     * Creates a new user.
+     *
+     * @param userDto a data transfer object of a user
+     * @return a created user
+     */
+    User create(UserDto userDto) throws ServiceException;
 }

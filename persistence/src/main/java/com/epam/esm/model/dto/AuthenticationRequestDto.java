@@ -7,9 +7,11 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 @NoArgsConstructor
-public class LoginDto {
+public class AuthenticationRequestDto {
+
     @NotBlank
     private String email;
+
     @NotBlank
     private String password;
 }

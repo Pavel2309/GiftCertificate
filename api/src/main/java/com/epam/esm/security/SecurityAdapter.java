@@ -1,6 +1,6 @@
-package com.epam.esm.model.security;
+package com.epam.esm.security;
 
-import com.epam.esm.model.security.jwt.JwtAuthenticationFilter;
+import com.epam.esm.security.jwt.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +24,9 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityAdapter extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
     JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
