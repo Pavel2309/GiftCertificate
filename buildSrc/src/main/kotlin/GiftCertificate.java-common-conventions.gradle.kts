@@ -14,6 +14,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:2.6.7")
     implementation("org.springframework.boot:spring-boot-starter-hateoas:2.6.7")
     testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.7")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.6.7")
 
     testImplementation("junit:junit-dep:4.11")
     testImplementation("org.mockito:mockito-core:4.4.0")

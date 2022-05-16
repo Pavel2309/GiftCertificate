@@ -13,5 +13,4 @@ import javax.persistence.Table;
 public class Role extends CommonEntity<Long> {
     @Enumerated(EnumType.STRING)
     public UserRole title;
-
 }

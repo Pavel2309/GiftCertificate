@@ -29,6 +29,18 @@ public class JwtProvider {
                 .compact();
     }
 
+    public String generateToken(UserPrincipal userPrincipal) {
+        Date now = new Date();
+        Date expirationDate = new Date(now.getTime() + jwtExpirationInMs);
+
+        return Jwts.builder()
+                .setSubject(userPrincipal.getUsername())
+                .setIssuedAt(new Date())
+                .setExpiration(expirationDate)
+                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .compact();
+    }
+
     public String getUserUsernameFromJWT(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)

@@ -5,7 +5,7 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.UserDto;
 import com.epam.esm.model.entity.Role;
 import com.epam.esm.model.entity.User;
-import com.epam.esm.model.entity.UserRole;
+import com.epam.esm.model.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -17,10 +17,12 @@ import java.util.List;
 public class UserMapper implements ObjectMapper<User, UserDto> {
 
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserMapper(PasswordEncoder passwordEncoder) {
+    public UserMapper(PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -33,13 +35,12 @@ public class UserMapper implements ObjectMapper<User, UserDto> {
     }
 
     @Override
-    public User convertDtoToEntity(UserDto userDto) throws ServiceException {
+    public User convertDtoToEntity(UserDto userDto) {
         User user = new User();
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        Role role = new Role();
-        role.setTitle(UserRole.USER);
+        Role role = roleRepository.findByTitle("USER").get();
         List<Role> userRoles = new ArrayList<>();
         userRoles.add(role);
         user.setRoles(userRoles);
