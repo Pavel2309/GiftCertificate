@@ -32,8 +32,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         OAuth2User auth2User = auth2AuthenticationToken.getPrincipal();
         String email = auth2User.getAttribute(EMAIL);
         String name = auth2User.getAttribute(NAME);
-        UserPrincipal userPrincipal;
-        userPrincipal = (UserPrincipal) userDetailsService.findOrSignUp(email, name);
+        UserPrincipal userPrincipal = (UserPrincipal) userDetailsService.findOrSignUp(email, name);
         String jwt = tokenProvider.generateToken(userPrincipal);
         response.getWriter().write(jwt);
     }

@@ -2,7 +2,6 @@ package com.epam.esm.service.impl;
 
 import com.epam.esm.converter.impl.UserMapper;
 import com.epam.esm.converter.impl.UserPrincipalMapper;
-import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.UserDto;
 import com.epam.esm.model.entity.User;
 import com.epam.esm.model.repository.UserRepository;
@@ -47,5 +46,4 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         return userPrincipalMapper.userToPrincipal(user.get());
     }
-
 }
