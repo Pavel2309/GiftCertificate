@@ -1,9 +1,13 @@
-### The multi-modal project represents a web service for Gift Certificates system.
+### The Multi-Module project represents a web service for the Gift Certificates system.
 
-### The project is going to be separated into several sections where each section adds a specific functionality to the project.
+-----
+
+#### The project is separated into several sections where each section adds a specific functionality.
 
 ### Stack
 Java EE, Spring Framework, Spring IoC, Spring Boot, Spring Security, Gradle, Apache Tomcat, MySQL, JUnit5, Mockito
+
+-----
 
 ## Section 1: REST API Basics (Done)
 
