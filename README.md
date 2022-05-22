@@ -1,9 +1,13 @@
-### The multi-modal project represents a web service for Gift Certificates system.
+### The Multi-Module project represents a web service for the Gift Certificates system.
 
-### The project is going to be separated into several sections where each section adds a specific functionality to the project.
+-----
+
+#### The project is separated into several sections where each section adds a specific functionality.
 
 ### Stack
-Java EE, Spring Framework, Spring IoC, Gradle, Apache Tomcat, MySQL, JUnit5, Mockito
+Java EE, Spring Framework, Spring IoC, Spring Boot, Spring Security, Gradle, Apache Tomcat, MySQL, JUnit5, Mockito
+
+-----
 
 ## Section 1: REST API Basics (Done)
 
@@ -30,8 +34,8 @@ The system should be extended and expose the following REST APis:
 1. Change a single field of a certificate.
 2. Add an entity of a User (implement only get operations).
 3. Make an order (a user can buy a certificate).
-4. Get information about orders of a user.
-5. Get information about a single order of a user (cost and timestamp of purchase).
+4. Get information about users' orders.
+5. Get information about user's orders (cost and timestamp of purchase).
 6. Get the most widely used tag of a user with the highest cost of all orders.
 7. Search certificates by multiple tags ("and" condition).
 8. Implement pagination for all GET endpoints.
@@ -44,14 +48,24 @@ The system should be extended and expose the following REST APis:
 
 
 ------
-## Section 3: Authentication & Spring Security
+## Section 3: Authentication & Spring Security (Done)
 
 ### Requirements
 
 1. Spring Security should be used as a security framework.
 2. Application should support only stateless user authentication and verify integrity of JWT token.
 3. Users should be stored in a database with some basic information and a password.
-4. Use Oauth2 as an authorization protocol.
-   1. OAuth2 scopes should be used to restrict data.
-   2. Implicit grant and Resource owner credentials grant should be implemented.
-5. Repository should be migrated to Spring Data.
+
+------
+User Permissions:
+- Guest:
+   * Read operations for main entity.
+   * Signup.
+   * Login.
+- User:
+   * Make an order on main entity.
+   * All read operations.
+- Administrator (can be added only via database call):
+   * All operations, including addition and modification of entities.
+
+------

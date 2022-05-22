@@ -125,10 +125,24 @@ public class ExceptionAdvice {
                 e.getHttpMethod(), e.getRequestURL()));
         return ErrorDetails.builder()
                 .timestamp(LocalDateTime.now())
-                .errorCode("40005")
+                .errorCode("40007")
                 .message("Method not found")
                 .errors(details)
                 .build();
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ErrorDetails handleResourceAlreadyExistException(ResourceAlreadyExistException e) {
+        List<String> details = new ArrayList<>();
+        details.add(String.format("Resource with with the %s already exist", e.getMessage()));
+        return ErrorDetails.builder()
+                .timestamp(LocalDateTime.now())
+                .errorCode("40007")
+                .message("Resource already exist")
+                .errors(details)
+                .build();
+
     }
 
     @ExceptionHandler(Exception.class)

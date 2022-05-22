@@ -8,9 +8,15 @@ import java.util.List;
 
 @Data
 public class OrderDto {
+
     private Long id;
+
     private Long userId;
+
     private List<Long> certificatesId;
+
     private BigDecimal price;
+
     private Timestamp purchaseDate;
+
 }
