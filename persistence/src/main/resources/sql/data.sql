@@ -22,9 +22,9 @@ INSERT INTO certificates_has_tags(certificates_id, tags_id) VALUES (2, 1);
 INSERT INTO certificates_has_tags(certificates_id, tags_id) VALUES (2, 2);
 INSERT INTO certificates_has_tags(certificates_id, tags_id) VALUES (3, 1);
 
-INSERT INTO users(name, email, password, operation, timestamp) VALUES ('user_1', 'email1@gmail.com', '111', 'INSERT', 1652203478);
-INSERT INTO users(name, email, password, operation, timestamp) VALUES ('user_2', 'email2@gmail.com', '222', 'INSERT', 1652203478);
-INSERT INTO users(name, email, password, operation, timestamp) VALUES ('user_3', 'email3@gmail.com', '333', 'INSERT', 1652203478);
+INSERT INTO users(name, email, password, operation, timestamp, enabled) VALUES ('user_1', 'email1@gmail.com', '111', 'INSERT', 1652203478, true);
+INSERT INTO users(name, email, password, operation, timestamp, enabled) VALUES ('user_2', 'email2@gmail.com', '222', 'INSERT', 1652203478, true);
+INSERT INTO users(name, email, password, operation, timestamp, enabled) VALUES ('user_3', 'email3@gmail.com', '333', 'INSERT', 1652203478, true);
 
 INSERT INTO orders(users_id, price, purchase_date, operation, timestamp)
 VALUES (1, 123, '2022-05-08 15:50:03.368', 'INSERT', 1652203478);

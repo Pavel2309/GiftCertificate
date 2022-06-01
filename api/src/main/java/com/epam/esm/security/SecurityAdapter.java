@@ -58,7 +58,6 @@ public class SecurityAdapter extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/v1/tags").fullyAuthenticated()
                 .antMatchers(HttpMethod.GET, "/api/v1/orders").fullyAuthenticated()
                 .antMatchers(HttpMethod.POST, "/api/v1/orders").fullyAuthenticated()
-                .anyRequest().hasRole("ADMIN")
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint((req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "UNAUTHORIZED : " + ex.getMessage()))

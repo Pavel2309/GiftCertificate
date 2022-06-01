@@ -13,6 +13,16 @@ create table certificates
         unique (id)
 );
 
+create table roles
+(
+    id        int auto_increment
+        primary key,
+    title     varchar(45)  not null,
+    operation varchar(255) not null,
+    timestamp bigint       not null,
+        unique (id)
+);
+
 create table tags
 (
     id        int auto_increment
@@ -48,6 +58,7 @@ create table users
     password  varchar(256) not null,
     operation varchar(255) not null,
     timestamp bigint       not null,
+    enabled   bit          not null,
         unique (id)
 );
 
@@ -85,5 +96,20 @@ create index fk_orders_has_certificates_certificates1_idx
 create index fk_orders_has_certificates_orders1_idx
     on orders_has_certificates (orders_id);
 
+create table users_has_roles
+(
+    users_id int not null,
+    roles_id int not null,
+    primary key (users_id, roles_id),
+    constraint fk_users_has_roles_roles1
+        foreign key (roles_id) references roles (id),
+    constraint fk_users_has_roles_users1
+        foreign key (users_id) references users (id)
+);
 
+create index fk_users_has_roles_roles1_idx
+    on users_has_roles (roles_id);
+
+create index fk_users_has_roles_users1_idx
+    on users_has_roles (users_id);
 
