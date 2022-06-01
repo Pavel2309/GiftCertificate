@@ -5,13 +5,16 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.model.dto.UserDto;
 import com.epam.esm.model.entity.Role;
 import com.epam.esm.model.entity.User;
+import com.epam.esm.model.entity.UserRole;
 import com.epam.esm.model.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class UserMapper implements ObjectMapper<User, UserDto> {
@@ -35,13 +38,14 @@ public class UserMapper implements ObjectMapper<User, UserDto> {
     }
 
     @Override
-    public User convertDtoToEntity(UserDto userDto) {
+    public User convertDtoToEntity(UserDto userDto) throws ServiceException {
         User user = new User();
         user.setName(userDto.getName());
         user.setEmail(userDto.getEmail());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        Role role = roleRepository.findByTitle("USER").get();
-        List<Role> userRoles = new ArrayList<>();
+        Role role = roleRepository.findByTitle("USER").orElseThrow(() ->
+                new ServiceException("failed to find a role"));
+        Set<Role> userRoles = new HashSet<>();
         userRoles.add(role);
         user.setRoles(userRoles);
         user.setEnabled(true);

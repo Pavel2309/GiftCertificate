@@ -5,11 +5,12 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-@Data
 @Entity
 @Table(name = "users")
+@Data
 @NoArgsConstructor
 public class User extends CommonEntity<Long> {
 
@@ -25,11 +26,9 @@ public class User extends CommonEntity<Long> {
     @NotNull
     private boolean enabled;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "users_has_roles",
-            joinColumns = {@JoinColumn(name = "users_id")},
-            inverseJoinColumns = {@JoinColumn(name = "roles_id")}
-    )
-    private List<Role> roles;
+    @ManyToMany
+    @JoinTable(name = "users_has_roles",
+            joinColumns = @JoinColumn(name = "users_id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_id"))
+    private Set<Role> roles = new HashSet<>();
 }

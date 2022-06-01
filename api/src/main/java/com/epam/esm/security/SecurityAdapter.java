@@ -1,8 +1,6 @@
 package com.epam.esm.security;
 
 import com.epam.esm.security.jwt.JwtAuthenticationFilter;
-import com.epam.esm.security.jwt.JwtProvider;
-import com.epam.esm.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,19 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityAdapter extends WebSecurityConfigurerAdapter {
 
-    private static final String ADMIN = "ADMIN";
-
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserDetailsServiceImpl userDetailsService;
-    private final JwtProvider jwtProvider;
-
     @Autowired
-    public SecurityAdapter(JwtAuthenticationFilter jwtAuthenticationFilter,
-                           UserDetailsServiceImpl userDetailsService, JwtProvider jwtProvider) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.userDetailsService = userDetailsService;
-        this.jwtProvider = jwtProvider;
-    }
+    JwtAuthenticationFilter jwtAuthenticationFilter;
+    @Autowired
+    private UserDetailsService userDetailsService;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -68,7 +58,7 @@ public class SecurityAdapter extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/v1/tags").fullyAuthenticated()
                 .antMatchers(HttpMethod.GET, "/api/v1/orders").fullyAuthenticated()
                 .antMatchers(HttpMethod.POST, "/api/v1/orders").fullyAuthenticated()
-                .anyRequest().hasRole(ADMIN)
+                .anyRequest().hasRole("ADMIN")
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint((req, res, ex) -> res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "UNAUTHORIZED : " + ex.getMessage()))
@@ -76,7 +66,7 @@ public class SecurityAdapter extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .oauth2Login()
-                .successHandler(new CustomAuthenticationSuccessHandler(userDetailsService, jwtProvider))
+                .successHandler(new CustomAuthenticationSuccessHandler())
                 .and()
                 .oauth2Client()
                 .and()

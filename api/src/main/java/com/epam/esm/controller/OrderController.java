@@ -55,13 +55,13 @@ public class OrderController {
     /**
      * Gets user orders with the specified user id
      *
-     * @param id         a user's id
+     * @param id a user's id
      * @param parameters a page and size parameters for pagination
      * @return an order data transfer object
      */
     @GetMapping("/users/{id}")
     public PagedModel<EntityModel<OrderDto>> getUserOrders(@PathVariable("id") Long id,
-                                                           @RequestParam Map<String, String> parameters) {
+                                                                @RequestParam Map<String, String> parameters) {
         PagedModel<OrderDto> orderDtos = orderService.findByUserId(id, parameters);
         return assembler.toPageModel(orderDtos, parameters);
     }

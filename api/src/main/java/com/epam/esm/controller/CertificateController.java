@@ -44,7 +44,7 @@ public class CertificateController {
     /**
      * Gets a list of certificates with the specified order id.
      *
-     * @param id         an order's id
+     * @param id an order's id
      * @param parameters a page and size parameters
      * @return a paged model object certificates
      */
@@ -81,7 +81,7 @@ public class CertificateController {
     /**
      * Updates an existing certificate.
      *
-     * @param id          the certificate's id for update
+     * @param id the certificate's id for update
      * @param certificate a certificate object in the JSON format containing fields to update
      * @return an updated certificate object
      */

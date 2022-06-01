@@ -11,6 +11,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2.2")
     implementation ("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2")
     testImplementation("org.mockito:mockito-junit-jupiter:4.5.1")
+    implementation("javax.xml.bind:jaxb-api:2.3.1")
 }
 
 repositories {
