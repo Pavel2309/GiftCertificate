@@ -36,6 +36,8 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.22")
     annotationProcessor("org.projectlombok:lombok:1.18.22")
+
+    runtimeOnly("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3")
 }
 
 tasks.test {
