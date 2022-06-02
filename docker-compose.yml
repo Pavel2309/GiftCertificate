@@ -1,0 +1,15 @@
+services:
+  sonarqube:
+    image: sonarqube
+    ports:
+      - 9000:9000
+    networks:
+      - mynetwork
+  jenkins:
+    image: jenkins/jenkins
+    ports:
+      - 8080:8080
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
