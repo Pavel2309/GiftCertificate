@@ -12,9 +12,15 @@ services:
     networks:
       - mynetwork
   tomcat:
-    image: tomcat:9.0
+    image: tomcat:9.0.63-jdk17-temurin-focal
     ports:
       - 8888:8080
+    networks:
+      - mynetwork
+  mysql:
+    image: mysql/mysql-server:latest
+    ports:
+      - 3308:3306
     networks:
       - mynetwork
 networks:
