@@ -11,5 +11,11 @@ services:
       - 8080:8080
     networks:
       - mynetwork
+  tomcat:
+    image: tomcat:9.0
+    ports:
+      - 8888:8080
+    networks:
+      - mynetwork
 networks:
   mynetwork:

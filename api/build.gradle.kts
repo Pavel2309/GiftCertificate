@@ -19,7 +19,6 @@ dependencies {
 repositories {
     mavenCentral()
 }
-
 tasks.jacocoTestReport {
     reports {
         xml.required.set(true)
@@ -28,7 +27,6 @@ tasks.jacocoTestReport {
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)
 }
-
 tasks.named("sonarqube").configure {
     dependsOn(tasks.test)
 }
