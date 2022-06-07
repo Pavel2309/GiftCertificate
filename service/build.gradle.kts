@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     id("GiftCertificate.java-common-conventions")
-    id("org.sonarqube")
+    id("org.sonarqube") version "3.3"
     id ("jacoco")
 }
 
@@ -17,7 +17,6 @@ tasks.jacocoTestReport {
 tasks.test {
     finalizedBy(tasks.jacocoTestReport)
 }
-
 tasks.named("sonarqube").configure {
     dependsOn(tasks.test)
 }
