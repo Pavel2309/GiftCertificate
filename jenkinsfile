@@ -6,27 +6,37 @@ pipeline {
         jdk 'jdk-17'
     }
     stages {
-        stage('Clone sources') {
+        stage('Git') {
             steps {
                 git url: 'https://github.com/Pavel2309/GiftCertificate.git'
             }
         }
-        stage('Build') {
+        stage('Tests') {
             steps {
-                sh './gradlew clean test war --no-daemon'
+                sh './gradlew clean test --no-daemon'
             }
         }
-        stage('SonarQube analysis') {
+        stage('SonarQube') {
             steps {
                 withSonarQubeEnv('sonarqube-9.4') {
                     sh './gradlew sonarqube --no-daemon'
                 }
             }
         }
-        stage('Deploy') {
+         stage("Quality gate") {
              steps {
-                 deploy adapters: [tomcat9(credentialsId: '42d19c08-3c1f-4961-8507-0bd1adc90490', path: '', url: 'http://192.168.100.3:8888/')], contextPath: 'rps', war: '**/*.war'
+                 waitForQualityGate abortPipeline: true
              }
-        }  
+         }
+        stage('War') {
+            steps {
+                sh './gradlew war --no-daemon'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                deploy adapters: [tomcat9(credentialsId: '5e716c72-f730-4a2b-a947-bcd6ce3efb01', path: '', url: 'http://192.168.100.3:8888/')], contextPath: 'rps', war: '**/*.war'
+            }
+        }
     }
 }

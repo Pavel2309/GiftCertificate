@@ -1,7 +1,7 @@
 plugins {
     war
     id("GiftCertificate.java-common-conventions")
-    id("org.sonarqube") version "3.3"
+    id("org.sonarqube")
     id ("jacoco")
 }
 
