@@ -18,16 +18,20 @@ pipeline {
         }
         stage('SonarQube') {
             steps {
-                withSonarQubeEnv('sonarqube-9.4') {
-                    sh './gradlew sonarqube --no-daemon'
+                script {
+                    def list = ["persistence", "service", "api"]
+                    list.each { module ->
+                        withSonarQubeEnv('sonarqube-9.4') {
+                            sh "./gradlew :$module:sonarqube --no-daemon"
+                        }
+                        waitForQualityGate abortPipeline: true
+                        dir("$module/build/sonar") {
+                            deleteDir()
+                        }
+                    }
                 }
             }
         }
-         stage("Quality gate") {
-             steps {
-                 waitForQualityGate abortPipeline: true
-             }
-         }
         stage('War') {
             steps {
                 sh './gradlew war --no-daemon'
